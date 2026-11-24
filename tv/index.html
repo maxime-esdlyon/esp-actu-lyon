@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ESP. Actu Lyon</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tv.css">
+</head>
+<body>
+<div class="tv" id="tv">
+  <div class="stage" id="stage">
+    <header class="bar">
+      <div class="brand"><span class="b1">ESP.</span><span class="b2">Actu Lyon</span></div>
+      <div class="prog" id="prog" aria-hidden="true"></div>
+      <div class="clock">
+        <span class="date" id="date"></span>
+        <b id="time"></b>
+        <span class="wx" id="wx"></span>
+      </div>
+    </header>
+    <main class="slides">
+      <section class="slide" id="slideA"></section>
+      <section class="slide" id="slideB"></section>
+    </main>
+    <section class="flash" id="flash" aria-live="assertive"></section>
+    <div class="prevtag" id="prevtag" hidden>Aperçu</div>
+  </div>
+</div>
+<div class="ctl" id="ctl">
+  <button type="button" data-a="prev">◀ Précédent</button>
+  <button type="button" data-a="pause">Pause</button>
+  <button type="button" data-a="next">Suivant ▶</button>
+  <button type="button" data-a="fs">Plein écran</button>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+<script src="config.js"></script>
+<script src="tv.js"></script>
+</body>
+</html>
