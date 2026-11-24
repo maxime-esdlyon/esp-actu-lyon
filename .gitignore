@@ -1,0 +1,4 @@
+.DS_Store
+.claude/
+# Serveur Apps Script : copié directement dans le projet Google (contient les adresses autorisées)
+apps-script/
