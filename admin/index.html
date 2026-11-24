@@ -1,0 +1,1339 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ESP. Actu Lyon · Outil interne</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Charte ESP, version « outil » : fond clair, calme, contrastes réservés à l'écran TV. */
+:root{
+  --ink:#0E0E0E; --paper:#FBFAF6; --red:#D20014; --yellow:#F0EB1E; --ocre:#B16800; --lav:#B494DC;
+  --line:rgba(14,14,14,.12); --soft:#F3F0E7; --mute:#6a665d; --ok:#2f8a55; --r:20px;
+  --sh:0 1px 2px rgba(14,14,14,.05),0 14px 34px -18px rgba(14,14,14,.28);
+  --f-display:'Oswald','Arial Narrow',Impact,sans-serif;
+  --f-serif:'Libre Baskerville',Georgia,serif;
+  --f-body:'Instrument Sans','Helvetica Neue',Arial,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--red);outline-offset:2px;border-radius:8px}
+h1,h2,h3,p{margin:0}
+.wrap{max-width:1440px;margin:0 auto;padding:0 28px}
+@media(max-width:700px){.wrap{padding:0 16px}}
+.muted{color:var(--mute)}
+.small{font-size:13px}
+.kicker{font-weight:600;text-transform:uppercase;letter-spacing:.12em;font-size:12px;color:var(--mute)}
+.disp{font-family:var(--f-display);font-weight:600;line-height:1.1}
+
+/* En-tête */
+.top{position:sticky;top:0;z-index:40;background:rgba(251,250,246,.9);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:22px;min-height:66px;flex-wrap:wrap;padding-top:8px;padding-bottom:8px}
+.brand{display:flex;align-items:center;gap:9px;font-family:var(--f-display);font-weight:700;font-size:22px;text-transform:uppercase;white-space:nowrap}
+.brand .b1{background:var(--yellow);padding:6px 10px 4px;border-radius:9px}
+nav.main{display:flex;gap:2px;flex:1;overflow-x:auto;scrollbar-width:none}
+nav.main::-webkit-scrollbar{display:none}
+nav.main button{border:0;background:none;font-weight:500;padding:8px 14px;border-radius:99px;white-space:nowrap;color:var(--mute);display:flex;gap:7px;align-items:center}
+nav.main button:hover{background:var(--soft);color:var(--ink)}
+nav.main button[aria-current=page]{background:var(--ink);color:var(--paper)}
+nav.main .cnt{background:var(--red);color:#fff;border-radius:99px;font-size:11px;font-weight:600;padding:0 7px;line-height:18px}
+.who{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--mute)}
+.who input{border:1px solid var(--line);background:#fff;border-radius:99px;padding:5px 12px;width:130px}
+.av{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--ink);color:var(--yellow);font-size:11px;font-weight:600;flex:none}
+.sync{background:var(--soft);font-size:13px;border-bottom:1px solid var(--line)}
+.sync .wrap{display:flex;justify-content:space-between;align-items:center;gap:8px 18px;flex-wrap:wrap;min-height:38px;padding-top:5px;padding-bottom:5px}
+.sync .l,.sync .r{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.sd{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--mute)}
+.sd.ok{background:var(--ok)}.sd.bad{background:var(--red)}.sd.wait{background:var(--ocre);animation:pulse 1s infinite}
+@keyframes pulse{50%{opacity:.3}}
+.linkbtn{border:0;background:none;padding:0;font-weight:600;text-decoration:underline;text-underline-offset:3px}
+
+/* Boutons, champs */
+.btn{display:inline-flex;align-items:center;gap:8px;background:var(--ink);color:var(--paper);border:1px solid var(--ink);padding:10px 18px;border-radius:99px;font-weight:600;font-size:14px;text-decoration:none;white-space:nowrap;transition:transform .15s,box-shadow .15s}
+.btn:hover{transform:translateY(-1px);box-shadow:0 10px 22px -14px rgba(14,14,14,.6)}
+.btn.alt{background:#fff;color:var(--ink);border-color:rgba(14,14,14,.22)}
+.btn.red{background:var(--red);border-color:var(--red);color:#fff}
+.btn.yel{background:var(--yellow);border-color:var(--yellow);color:var(--ink)}
+.btn.sm{padding:6px 12px;font-size:13px}
+.btn.dgr{background:#fff;color:var(--red);border-color:rgba(210,0,20,.35)}
+.btn:disabled{opacity:.45;cursor:default;transform:none;box-shadow:none}
+.inp,select.inp,textarea.inp{border:1px solid var(--line);background:#fff;padding:9px 13px;border-radius:12px;min-width:0;width:100%}
+textarea.inp{resize:vertical;min-height:90px}
+.field{display:grid;gap:5px}
+.field>label,.field>.lab{font-size:12.5px;font-weight:600;color:var(--mute)}
+.field .hint{font-size:12px;color:var(--mute)}
+.count{font-size:12px;color:var(--mute);justify-self:end;margin-top:-2px}
+.count.over{color:var(--red);font-weight:600}
+.seg{display:inline-flex;background:var(--soft);border-radius:99px;padding:3px;flex-wrap:wrap}
+.seg button{border:0;background:none;padding:6px 14px;border-radius:99px;font-weight:600;font-size:13px;color:var(--mute)}
+.seg button[aria-pressed=true]{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(14,14,14,.15)}
+.chip{display:inline-flex;align-items:center;gap:6px;font-weight:600;font-size:12px;padding:3px 10px;border-radius:99px;background:var(--soft);line-height:1.5;white-space:nowrap}
+.chip i{width:8px;height:8px;border-radius:50%;display:inline-block;box-shadow:inset 0 0 0 1px rgba(14,14,14,.25)}
+.badge{display:inline-block;font-size:11px;font-weight:600;padding:1px 8px;border-radius:99px;line-height:1.6;white-space:nowrap}
+.b-urg{background:var(--red);color:#fff}.b-late{background:var(--ink);color:var(--yellow)}.b-soon{background:var(--yellow)}.b-off{background:var(--soft);color:var(--mute);box-shadow:inset 0 0 0 1px var(--line)}.b-tv{background:var(--lav)}
+.panel{background:#fff;border:1px solid var(--line);border-radius:24px;padding:22px;box-shadow:var(--sh)}
+.panel.y{background:color-mix(in srgb,var(--yellow) 38%,var(--paper));border-color:transparent;box-shadow:none}
+.panel.l{background:color-mix(in srgb,var(--lav) 34%,var(--paper));border-color:transparent;box-shadow:none}
+.panel.k{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.empty{border:1px dashed rgba(14,14,14,.28);border-radius:20px;padding:28px;background:var(--soft);display:grid;gap:12px;justify-items:start}
+.head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;padding:34px 0 22px}
+.head h1{font-family:var(--f-display);font-weight:700;font-size:44px;line-height:1;text-transform:uppercase}
+.tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:18px}
+.toolbar .inp{width:auto}
+.toolbar input[type=search]{flex:1;min-width:220px}
+main{padding-bottom:80px;min-height:70vh}
+
+/* Vignettes */
+.th{position:relative;overflow:hidden;border-radius:12px;background:var(--acc,var(--soft));aspect-ratio:4/3}
+.th img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.th.duo img{filter:grayscale(1) contrast(1.1) brightness(1.3);mix-blend-mode:multiply}
+.th .ph{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--f-display);font-weight:700;font-size:22px;text-transform:uppercase;color:rgba(14,14,14,.55)}
+.th .gl{position:absolute;right:6px;bottom:6px;background:#fff;border-radius:99px;font-size:11px;font-weight:600;padding:0 7px}
+
+/* Tableau de bord */
+.dash{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:24px}
+@media(max-width:1000px){.dash{grid-template-columns:1fr}}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:22px}
+.stat{background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px 16px;cursor:pointer;text-align:left}
+.stat:hover{border-color:var(--ink)}
+.stat b{display:block;font-family:var(--f-display);font-size:34px;line-height:1}
+.stat span{font-size:12.5px;color:var(--mute);font-weight:600}
+.list{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.list li{display:grid;grid-template-columns:70px minmax(0,1fr) auto;gap:14px;align-items:center;padding:8px;border-radius:14px;cursor:pointer}
+.list li:hover{background:var(--soft)}
+.list .t{font-family:var(--f-display);font-weight:600;font-size:17px;line-height:1.2}
+.mini{position:relative;aspect-ratio:16/9;border-radius:14px;overflow:hidden;background:#000}
+.mini iframe{position:absolute;left:0;top:0;width:1920px;height:1080px;border:0;transform-origin:0 0}
+
+/* Liste */
+.rows{display:grid}
+.rowc{display:grid;grid-template-columns:86px minmax(0,1fr) 190px auto;gap:16px;align-items:center;padding:12px;border-top:1px solid var(--line);border-radius:16px}
+.rowc:hover{background:var(--soft)}
+.rowc.arch{opacity:.55}
+.rowc .t{border:0;background:none;padding:0;text-align:left;font-family:var(--f-display);font-weight:600;font-size:19px;line-height:1.2}
+.rowc .t:hover{text-decoration:underline;text-underline-offset:3px}
+.meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:6px}
+.dates{font-size:12.5px;line-height:1.5;color:var(--mute)}
+.acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+@media(max-width:1000px){.rowc{grid-template-columns:72px minmax(0,1fr)}.rowc .dates,.rowc .acts{grid-column:2;justify-content:flex-start}}
+
+/* Colonnes (kanban) */
+.board{display:grid;grid-template-columns:repeat(7,minmax(210px,1fr));gap:12px;overflow-x:auto;padding-bottom:20px;align-items:start}
+.col{background:var(--soft);border-radius:22px;min-height:240px;padding:6px}
+.col.over{outline:2px dashed var(--ink);outline-offset:-5px}
+.col header{padding:12px 12px 8px;display:flex;justify-content:space-between;align-items:center;font-weight:600;font-size:14px}
+.col header span:last-child{color:var(--mute);font-weight:500}
+.cards{display:grid;gap:10px;padding:4px}
+.card{background:#fff;border-radius:16px;padding:8px;box-shadow:var(--sh);cursor:grab;display:grid;gap:8px}
+.card.drag{opacity:.4}
+.card .th{aspect-ratio:2/1}
+.card h3{font-family:var(--f-display);font-weight:600;font-size:16px;line-height:1.22;padding:0 4px;cursor:pointer}
+.card h3:hover{text-decoration:underline}
+.card .meta{padding:0 4px 2px;margin:0}
+.sdot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;box-shadow:inset 0 0 0 1px rgba(14,14,14,.2)}
+
+/* Calendrier */
+.cal-layout{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:20px;align-items:start}
+@media(max-width:1100px){.cal-layout{grid-template-columns:1fr}}
+.cal{display:grid;grid-template-columns:74px repeat(7,minmax(0,1fr));border:1px solid var(--line);border-radius:18px;overflow:hidden;background:#fff}
+.cal-h{padding:8px;font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);background:var(--soft)}
+.cal-w{padding:8px;background:var(--soft);border-top:1px solid var(--line);font-size:12px;display:flex;flex-direction:column;gap:5px}
+.cal-w b{font-family:var(--f-display);font-size:15px}
+.cal-w.tf{border-left:6px solid var(--tf)}
+.cal-day{min-height:116px;padding:5px;border-top:1px solid var(--line);border-left:1px solid rgba(14,14,14,.07);display:flex;flex-direction:column;gap:3px;min-width:0}
+.cal-day.out{background:rgba(14,14,14,.025)}
+.cal-day.out .dn{opacity:.4}
+.cal-day.today{background:rgba(240,235,30,.16)}
+.cal-day.over,.drop.over{background:rgba(180,148,220,.3);outline:2px dashed var(--ink);outline-offset:-3px}
+.dn{display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:12.5px}
+.cal-day.today .dn span{background:var(--ink);color:#fff;border-radius:99px;padding:0 7px}
+.plus{opacity:0;border:0;background:var(--soft);border-radius:99px;width:20px;height:20px;line-height:20px;font-size:14px;padding:0}
+.cal-day:hover .plus,.plus:focus-visible{opacity:1}
+.cchip{display:flex;align-items:center;gap:5px;padding:3px 6px;border-radius:7px;background:var(--paper);border:1px solid var(--line);font-size:11.5px;line-height:1.25;cursor:grab;min-width:0}
+.cchip i{width:8px;height:8px;border-radius:50%;flex:none;box-shadow:0 0 0 1px rgba(14,14,14,.3)}
+.cchip span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cchip.fl{background:color-mix(in srgb,var(--red) 14%,#fff);cursor:pointer}
+.cchip.drag{opacity:.4}
+.ctf{display:block;width:100%;text-align:left;border:0;border-radius:5px;padding:1px 6px;font-size:10.5px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.side{display:grid;gap:14px}
+.box{background:var(--soft);border-radius:18px;padding:14px}
+.box h3{font-family:var(--f-display);font-size:18px;margin-bottom:6px}
+.box .stack{display:grid;gap:6px;margin-top:8px}
+
+/* Formulaires / volets */
+.modal{position:fixed;inset:0;z-index:100;display:flex;justify-content:flex-end}
+.mback{position:absolute;inset:0;background:rgba(14,14,14,.45)}
+.sheet{position:relative;background:var(--paper);width:min(860px,100%);height:100%;overflow:auto;box-shadow:-20px 0 50px -20px rgba(14,14,14,.4);animation:slin .25s cubic-bezier(.2,.7,.2,1)}
+.sheet.narrow{width:min(520px,100%);height:auto;max-height:92vh;margin:auto;border-radius:24px}
+.modal.center{justify-content:center;align-items:center}
+@keyframes slin{from{transform:translateX(30px);opacity:0}}
+.mx{position:absolute;right:16px;top:14px;border:0;background:var(--soft);width:36px;height:36px;border-radius:50%;font-size:15px;z-index:2}
+.mbody{padding:30px 30px 34px}
+.mbody h2{font-family:var(--f-display);font-weight:700;font-size:30px;line-height:1.05;margin:6px 46px 4px 0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px 16px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px 16px}
+.full{grid-column:1/-1}
+@media(max-width:640px){.grid2,.grid3{grid-template-columns:1fr}}
+fieldset{border:1px solid var(--line);border-radius:18px;padding:16px 16px 18px;margin:18px 0 0;background:#fff}
+legend{font-family:var(--f-display);font-weight:600;font-size:17px;padding:0 8px}
+.opts{display:flex;gap:6px;flex-wrap:wrap}
+.opts label{cursor:pointer}
+.opts input{position:absolute;opacity:0;pointer-events:none}
+.opts span{display:inline-block;border:1px solid var(--line);background:#fff;padding:6px 13px;border-radius:99px;font-weight:600;font-size:13px}
+.opts input:checked+span{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.opts input:focus-visible+span{outline:3px solid var(--red);outline-offset:2px}
+.media-ed{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.media-ed .th{width:170px;flex:none}
+.gal{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:8px}
+.gal li{display:grid;grid-template-columns:70px 1fr auto;gap:10px;align-items:center;background:var(--soft);border-radius:14px;padding:6px 8px}
+.gal .th{width:70px}
+.gal .ctl{display:flex;gap:4px}
+.gal .ctl button{border:0;background:#fff;border-radius:8px;width:30px;height:30px}
+.coms{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:8px}
+.coms li{background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px 12px;font-size:14px}
+.coms li header{display:flex;gap:8px;align-items:center;font-size:12.5px;color:var(--mute)}
+.coms li header b{color:var(--ink)}
+.foot{display:flex;gap:10px;flex-wrap:wrap;justify-content:space-between;margin-top:24px;padding-top:18px;border-top:1px solid var(--line)}
+.foot>div{display:flex;gap:8px;flex-wrap:wrap}
+.conflict{background:color-mix(in srgb,var(--red) 12%,#fff);border:1px solid rgba(210,0,20,.35);border-radius:14px;padding:12px 14px;margin-top:14px;display:grid;gap:8px}
+
+/* Éditions */
+.eds{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px}
+.ed{background:#fff;border:1px solid var(--line);border-radius:22px;padding:20px;display:grid;gap:6px;box-shadow:var(--sh);cursor:pointer}
+.ed:hover{border-color:var(--ink)}
+.ed-items{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:8px}
+.ed-items li{display:grid;grid-template-columns:20px 64px minmax(0,1fr) auto;gap:10px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:14px;padding:6px 10px;cursor:grab}
+.ed-items li.drag{opacity:.4}.ed-items li.over{outline:2px dashed var(--ink)}
+.ed-items .th{width:64px}
+
+/* Flash */
+.fl-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:28px;align-items:start}
+@media(max-width:1000px){.fl-grid{grid-template-columns:1fr}}
+.fl-list{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.fl-list li{border:1px solid var(--line);border-radius:18px;padding:14px 16px;background:#fff;display:grid;gap:6px}
+.fl-list li.on{background:var(--red);color:#fff;border-color:var(--red)}
+.fl-list li.on .btn.alt{border-color:transparent}
+.fl-list b{font-family:var(--f-display);font-size:20px;font-weight:600}
+.lvl-info{background:color-mix(in srgb,var(--yellow) 60%,#fff)}.lvl-imp{background:color-mix(in srgb,var(--ocre) 25%,#fff)}.lvl-urg{background:color-mix(in srgb,var(--red) 18%,#fff)}
+
+/* Diffusion */
+.diff{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:24px;align-items:start}
+@media(max-width:1100px){.diff{grid-template-columns:1fr}}
+.tvframe{position:relative;aspect-ratio:16/9;background:#000;border-radius:18px;overflow:hidden}
+.tvframe iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:13.5px}
+.kv dt{color:var(--mute)}.kv dd{margin:0;word-break:break-word}
+.log{max-height:220px;overflow:auto;font-size:12.5px;background:var(--soft);border-radius:12px;padding:8px 10px;white-space:pre-wrap}
+
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:var(--ink);color:var(--paper);padding:11px 20px;border-radius:99px;font-size:14px;z-index:300;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;max-width:92vw}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.toast.bad{background:var(--red)}
+body[data-role=contributeur] .ed-only{display:none!important}
+.auth{max-width:560px;margin:8vh auto 0;display:grid;gap:16px;justify-items:start}
+.auth h1{font-size:clamp(40px,7vw,64px)}
+.auth-ov{position:fixed;inset:0;background:rgba(14,14,14,.55);display:grid;place-items:center;z-index:200;padding:16px}
+.auth-box{background:var(--paper);border-radius:24px;padding:28px;display:grid;gap:12px;justify-items:start;max-width:420px}
+.hist{display:grid;gap:8px;margin-top:10px;list-style:none;padding:0}
+.hist li{border:1px solid var(--line);border-radius:14px;padding:10px 12px;display:grid;gap:4px;background:#fff}
+.hist header{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:13px}
+.hist .chg{font-size:12.5px;color:var(--mute)}
+.acc{display:grid;gap:8px;margin-top:10px}
+.acc .row{display:grid;grid-template-columns:1fr auto auto;gap:6px;align-items:center}
+.acc .row span{overflow-wrap:anywhere;font-size:13.5px}
+.lock{background:var(--soft);border-radius:14px;padding:10px 14px;font-size:14px;margin-top:12px}
+.loading{display:grid;place-items:center;min-height:50vh;color:var(--mute)}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="brand"><span class="b1">ESP.</span><span>Actu Lyon</span></div>
+    <nav class="main" id="nav" aria-label="Sections"></nav>
+    <div class="who" id="who"></div>
+  </div>
+</header>
+<div class="sync"><div class="wrap">
+  <div class="l"><span class="sd wait" id="sd"></span><span id="sync-t">Connexion…</span></div>
+  <div class="r"><span id="pub-t" class="muted"></span><button class="linkbtn" id="refresh" type="button">Actualiser</button></div>
+</div></div>
+<main id="app"><div class="loading">Chargement des contenus…</div></main>
+<div id="modal-root"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="config.js"></script>
+<script>
+'use strict';
+/* =====================================================================
+   ESP. Actu Lyon — outil interne
+   - Déployé comme application Web Google Apps Script (liée au Google Sheet
+     « Actu Lyon – Base éditoriale ») : chaque membre se connecte avec son
+     compte Google, les données vont dans le Sheet, les médias dans Drive.
+   - Ouvert hors Apps Script (fichier local), il passe en MODE DÉMO :
+     données dans le navigateur, publication = téléchargement des JSON.
+   ===================================================================== */
+
+/* ---------- Utilitaires ---------- */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const h = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const norm = s => String(s == null ? '' : s).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+const yes = v => norm(v) === 'oui';
+const pad = n => String(n).padStart(2, '0');
+const isoDay = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+const isoMin = d => isoDay(d) + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+const today = () => isoDay(new Date());
+const parseDay = s => { const [y, m, d] = String(s).slice(0, 10).split('-').map(Number); return new Date(y, (m || 1) - 1, d || 1); };
+const addDays = (s, n) => { const d = parseDay(s); d.setDate(d.getDate() + n); return isoDay(d); };
+const diffDays = (a, b) => Math.round((parseDay(b) - parseDay(a)) / 864e5);
+const mondayOf = s => { const d = parseDay(s); d.setDate(d.getDate() - (d.getDay() + 6) % 7); return isoDay(d); };
+const weekNum = s => { const d = parseDay(s); d.setDate(d.getDate() + 3 - (d.getDay() + 6) % 7); const w1 = new Date(d.getFullYear(), 0, 4); return 1 + Math.round(((d - w1) / 864e5 - 3 + (w1.getDay() + 6) % 7) / 7); };
+const MOIS = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+const MO = ['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
+const JOURS = ['dim.','lun.','mar.','mer.','jeu.','ven.','sam.'];
+const fmtD = s => { if (!s) return ''; const d = parseDay(s); return d.getDate() + ' ' + MO[d.getMonth()]; };
+const fmtDT = s => { if (!s) return ''; const d = new Date(String(s).length <= 10 ? s + 'T00:00' : s); return isNaN(d) ? s : fmtD(isoDay(d)) + ' ' + pad(d.getHours()) + 'h' + pad(d.getMinutes()); };
+const uid = p => p + '-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+const initials = n => String(n || '?').split(/[\s.@_-]+/).filter(Boolean).slice(0, 2).map(x => x[0].toUpperCase()).join('');
+function toast(msg, bad) { const t = $('#toast'); t.textContent = msg; t.className = 'toast show' + (bad ? ' bad' : ''); clearTimeout(toast.t); toast.t = setTimeout(() => t.className = 'toast', bad ? 6000 : 3000); }
+
+/* ---------- Référentiels (identiques à l'onglet « Listes » du Sheet) ---------- */
+const STATUTS = ['Brouillon', 'À traiter', 'Sélectionné', 'En préparation', 'À valider', 'Programmé', 'Publié'];
+const ST_COL = { 'Brouillon': '#d8d4c8', 'À traiter': '#B494DC', 'Sélectionné': '#d9c9ee', 'En préparation': '#F0EB1E', 'À valider': '#B16800', 'Programmé': '#0E0E0E', 'Publié': '#D20014' };
+const PRIOS = ['Basse', 'Normale', 'Haute', 'Urgente'];
+const SUPPORTS = ['NEWS', 'TV', 'NEWS + TV'];
+const ED_ST = ['Brouillon', 'En préparation', 'À valider', 'Programmée', 'Publiée', 'Archivée'];
+const TF_COL = { Rouge: '#D20014', Jaune: '#F0EB1E', Lavande: '#B494DC', Ocre: '#B16800', Encre: '#0E0E0E' };
+const FL_LVL = ['Info', 'Important', 'Urgent'];
+const FL_ST = ['Brouillon', 'Programmé', 'Archivé'];
+const stOf = v => STATUTS.find(s => norm(s) === norm(v)) || 'À traiter';
+const isTV = r => { const s = norm(r.support); return !s || s === 'tv' || s === 'news + tv'; };
+
+/* =====================================================================
+   Construction des fichiers publics (content.json / flash.json).
+   ⚠ Même fonction que buildPublic() dans Code.gs : garder les deux identiques.
+   ===================================================================== */
+function buildPublic(db, opt) {
+  opt = opt || {};
+  const N = s => String(s == null ? '' : s).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+  const Y = v => N(v) === 'oui';
+  const p2 = n => String(n).padStart(2, '0');
+  const now = opt.now || new Date();
+  const td = now.getFullYear() + '-' + p2(now.getMonth() + 1) + '-' + p2(now.getDate());
+  const nowDT = td + 'T' + p2(now.getHours()) + ':' + p2(now.getMinutes()) + ':00';
+  const media = opt.mediaUrl || (id => id);
+  const src = (id, kind) => !id ? '' : /^(https?:|data:|\.\.?\/)/.test(id) ? id : media(id, kind);
+  const cats = (db.categories || []).filter(c => c.id).map(c => ({ id: String(c.id), label: c.libelle || c.id, color: c.couleur || '#F0EB1E' }));
+  const catId = v => { const n = N(v); const c = cats.find(c => N(c.id) === n || N(c.label) === n); return c ? c.id : 'campus'; };
+  const fmt = v => { const n = N(v); return n === 'seule' ? 'seule' : n.indexOf('group') === 0 ? 'groupe' : n.indexOf('plein') === 0 ? 'plein' : ''; };
+  const gal = c => String(c || '').split(';').map(x => x.trim()).filter(Boolean).map(x => {
+    const i = x.indexOf('|'), id = (i < 0 ? x : x.slice(0, i)).trim(), cap = i < 0 ? '' : x.slice(i + 1).trim();
+    const v = id.indexOf('v:') === 0;
+    return { type: v ? 'video' : 'image', src: src(v ? id.slice(2) : id, v ? 'video' : 'image'), caption: cap };
+  }).filter(g => g.src);
+  // Ordre défini par l'édition en cours (Publiée ou Programmée, dates couvrant aujourd'hui)
+  const order = {};
+  (db.editions || []).filter(e => ['publiee', 'programmee'].indexOf(N(e.statut)) >= 0 && (!e.date_debut || e.date_debut <= td) && (!e.date_fin || e.date_fin >= td))
+    .forEach(e => String(e.contenus_ordonnes || '').split(';').map(s => s.trim()).filter(Boolean).forEach((id, k) => { if (!(id in order)) order[id] = k + 1; }));
+  const only = opt.onlyIds ? new Set(opt.onlyIds) : null;
+  const okSt = r => opt.anyStatus || ['programme', 'publie'].indexOf(N(r.statut)) >= 0;
+  const okSup = r => { const s = N(r.support); return !s || s === 'tv' || s === 'news + tv'; };
+  const items = (db.items || []).filter(r => r.id && (only ? only.has(r.id) : (!Y(r.archive) && okSt(r) && okSup(r) && (!r.date_expiration || r.date_expiration >= td))))
+    .map(r => {
+      const c = catId(r.categorie);
+      const o = {
+        id: r.id, title: r.titre || '', chapo: r.accroche || '', resume: r.resume_court || '', cat: c,
+        prio: r.priorite || 'Normale', format: fmt(r.format_tv), qr: Y(r.qr_tv) && !!r.lien_externe, link: r.lien_externe || '',
+        qrLabel: r.legende_qr || '', filter: N(r.filtre_photo) !== 'non', fit: Y(r.photo_entiere),
+        image: src(r.image_id, 'image'), gallery: gal(r.galerie),
+        pub: only ? '' : (r.date_publication || ''), exp: only ? '' : (r.date_expiration || ''), evt: r.date_evenement || '',
+        order: (r.id in order) ? String(order[r.id]) : String(r.ordre || '')
+      };
+      if (c === 'horoscope') o.text = r.description || '';
+      return o;
+    });
+  const tempsForts = (db.tempsForts || []).filter(t => t.id && Y(t.afficher_tv) && t.date_debut && (t.date_fin || t.date_debut) >= td)
+    .map(t => ({ id: t.id, title: t.titre || '', start: t.date_debut, end: t.date_fin || '', color: t.couleur || 'Rouge' }));
+  const flashes = (db.flashes || []).filter(f => f.id && N(f.statut) === 'programme' && (!f.fin || f.fin > nowDT))
+    .map(f => ({ id: f.id, title: f.titre || '', message: f.message || '', level: f.niveau || 'Info', duration: parseInt(f.duree_secondes, 10) || 30, start: f.debut || '', end: f.fin || '' }));
+  const stamp = new Date().toISOString();
+  return {
+    content: { version: 1, generatedAt: stamp, generatedBy: opt.by || '', categories: cats, items, tempsForts },
+    flash: { version: 1, generatedAt: stamp, flashes }
+  };
+}
+
+/* =====================================================================
+   Connexion aux données
+   - Réel : admin/config.js renseigné → connexion Google, puis chaque action
+     est envoyée au script Google (Apps Script) qui écrit dans le Sheet / Drive.
+   - Démo : sans configuration (ou ?demo=1) → données dans ce navigateur.
+   ===================================================================== */
+const CFG = window.ADMIN_CONFIG || {};
+const LIVE = !!(CFG.apiUrl && CFG.clientId) && !/[?&]demo=1/.test(location.search);
+const TOKEN_KEY = 'espActu.idt';
+
+/* Connexion Google (Google Identity Services) */
+const Auth = {
+  token: null, waiting: [],
+  claims(t) { try { return JSON.parse(decodeURIComponent(escape(atob(t.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))))); } catch (_) { return null; } },
+  valid(t) { const c = t && this.claims(t); return !!(c && c.exp * 1000 > Date.now() + 60000); },
+  init() {
+    try { const t = sessionStorage.getItem(TOKEN_KEY); if (this.valid(t)) this.token = t; } catch (_) {}
+    return new Promise((res, rej) => {
+      const s = document.createElement('script'); s.src = 'https://accounts.google.com/gsi/client'; s.async = true;
+      s.onload = () => {
+        google.accounts.id.initialize({ client_id: CFG.clientId, callback: r => this.got(r.credential), auto_select: true, cancel_on_tap_outside: false, use_fedcm_for_prompt: true });
+        res();
+      };
+      s.onerror = () => rej(new Error('Le service de connexion Google ne répond pas.'));
+      document.head.appendChild(s);
+    });
+  },
+  got(t) {
+    this.token = t; try { sessionStorage.setItem(TOKEN_KEY, t); } catch (_) {}
+    const w = this.waiting; this.waiting = []; w.forEach(f => f(t));
+    if (!w.length) loadAll();   // connexion après un refus d’accès ou une déconnexion
+    const ov = $('#auth-ov'); if (ov) ov.remove();
+  },
+  /* Jeton valide, ou demande de connexion (première fois, ou session expirée après ~1 h) */
+  ensure() {
+    if (this.valid(this.token)) return Promise.resolve(this.token);
+    return new Promise(res => {
+      this.waiting.push(res);
+      if (S.me && S.me.email) this.relogin(); else signInScreen();
+    });
+  },
+  relogin() {
+    if ($('#auth-ov')) return;
+    const ov = document.createElement('div'); ov.id = 'auth-ov'; ov.className = 'auth-ov';
+    ov.innerHTML = `<div class="auth-box"><p class="kicker">Session expirée</p><h2>Reconnecte-toi pour continuer</h2><p class="small muted">Ta saisie en cours est conservée.</p><div class="gbtn"></div></div>`;
+    document.body.appendChild(ov);
+    google.accounts.id.renderButton($('.gbtn', ov), { theme: 'outline', size: 'large', shape: 'pill', text: 'continue_with', locale: 'fr' });
+    google.accounts.id.prompt();
+  },
+  signOut() {
+    try { sessionStorage.removeItem(TOKEN_KEY); } catch (_) {}
+    this.token = null; S.me = { email: '', name: '' };
+    try { google.accounts.id.disableAutoSelect(); } catch (_) {}
+    signInScreen();
+  }
+};
+function signInScreen(msg) {
+  $('#nav').innerHTML = ''; $('#who').innerHTML = ''; setSync('wait', 'Non connecté·e');
+  $('#app').innerHTML = `<div class="wrap"><section class="auth">
+    <p class="kicker">Outil interne</p><h1>ESP. Actu Lyon</h1>
+    <p>Connecte-toi avec ton compte Google pour proposer et gérer les contenus de l’écran du coworking.</p>
+    ${msg ? `<div class="conflict"><b>${h(msg)}</b></div>` : ''}
+    <div id="gbtn"></div>
+    <p class="small muted">Seules les adresses autorisées par l’équipe peuvent entrer. Textes, photos, vidéos et historique sont rangés dans le Google Drive de l’école.</p>
+  </section></div>`;
+  google.accounts.id.renderButton($('#gbtn'), { theme: 'filled_black', size: 'large', shape: 'pill', text: 'signin_with', locale: 'fr' });
+  if (!msg) google.accounts.id.prompt();
+}
+
+/* Appel du script Google. Corps en text/plain : pas de requête préalable CORS. */
+async function remote(fn, ...args) {
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const token = await Auth.ensure();
+    let r;
+    try {
+      const res = await fetch(CFG.apiUrl, { method: 'POST', redirect: 'follow', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ fn, args, token }) });
+      r = await res.json();
+    } catch (e) { throw new Error('Serveur injoignable (connexion internet ou adresse du script).'); }
+    if (r.ok) return r.data;
+    if (r.code === 401 && attempt === 0) { Auth.token = null; try { sessionStorage.removeItem(TOKEN_KEY); } catch (_) {} continue; }
+    const err = new Error(r.error || 'Erreur du serveur'); err.code = r.code; throw err;
+  }
+}
+const DEMO_KEY = 'espActu.demo.v1';
+const DEMO_ROLE = (location.search.match(/[?&]role=(admin|editeur|contributeur)/) || [])[1] || 'admin';
+const Demo = {
+  db() { try { const d = JSON.parse(localStorage.getItem(DEMO_KEY)); if (d && d.items) return d; } catch (_) {} const s = demoSeed(); this.put(s); return s; },
+  put(d) { d.rev = (d.rev || 0) + 1; try { localStorage.setItem(DEMO_KEY, JSON.stringify(d)); } catch (e) { toast('Stockage du navigateur plein : retire des médias de démonstration.', true); } },
+  log(d, kind, id, action, before, after) {
+    d.history = (d.history || []).concat([{ date: isoMin(new Date()), par: S.me.name || 'Démo', email: '', onglet: kind, id, action, titre: (after || before || {}).titre || '', avant: before, apres: after }]).slice(-300);
+  },
+  async load() { const d = this.db(); return { db: d, me: { email: '', name: localStorage.getItem('espActu.me') || '', role: DEMO_ROLE }, settings: Object.assign({ mode: 'demo', tvUrl: '../tv/index.html', canAdmin: DEMO_ROLE === 'admin', access: d.access || [] }, d.settings || {}), rev: d.rev }; },
+  async rev() { return { rev: this.db().rev }; },
+  async save(kind, obj, expected) {
+    const d = this.db(); const list = d[kind] = d[kind] || []; const i = list.findIndex(x => x.id === obj.id);
+    if (i >= 0 && expected && list[i].modifie_le && list[i].modifie_le !== expected) return { conflict: true, current: list[i] };
+    if (DEMO_ROLE === 'contributeur') {
+      const open = s => ['brouillon', 'a traiter'].includes(norm(s));
+      if (kind !== 'items' && kind !== 'comments') throw new Error('Ton rôle (contributeur) permet seulement de proposer des contenus et de commenter.');
+      if (kind === 'items' && ((i >= 0 && !open(list[i].statut)) || !open(obj.statut))) throw new Error('Ton rôle permet les statuts Brouillon ou À traiter ; un·e éditeur·rice fera la suite.');
+    }
+    const before = i >= 0 ? Object.assign({}, list[i]) : null;
+    if (i >= 0) list[i] = Object.assign({}, list[i], obj); else list.push(obj);
+    this.log(d, kind, obj.id, before ? 'modification' : 'creation', before, i >= 0 ? list[i] : obj);
+    this.put(d); return { ok: true, obj: i >= 0 ? list[i] : obj, rev: d.rev };
+  },
+  async remove(kind, id) {
+    const d = this.db(); const before = (d[kind] || []).find(x => x.id === id) || null;
+    d[kind] = (d[kind] || []).filter(x => x.id !== id); if (kind === 'items') d.comments = (d.comments || []).filter(c => c.contenu_id !== id);
+    this.log(d, kind, id, 'suppression', before, null); this.put(d); return { ok: true, rev: d.rev };
+  },
+  async history(kind, id) { return (this.db().history || []).filter(x => x.onglet === kind && x.id === id).reverse().slice(0, 30); },
+  async access(op, email, role) {
+    const d = this.db(); let l = d.access || [];
+    email = String(email || '').trim().toLowerCase();
+    if (op !== 'list' && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) throw new Error('Adresse e-mail invalide.');
+    if (op === 'set') { l = l.filter(x => x.email !== email).concat([{ email, role }]).sort((a, b) => a.email.localeCompare(b.email)); }
+    if (op === 'remove') l = l.filter(x => x.email !== email);
+    d.access = l; this.put(d); return l;
+  },
+  async upload(f) {
+    if (f.data.length > 2.5e6) throw new Error('En mode démo, les fichiers sont limités à ~2 Mo (stockés dans le navigateur).');
+    const id = uid('m'); localStorage.setItem('espActu.media.' + id, 'data:' + f.mime + ';base64,' + f.data); return { id };
+  },
+  async publish(what) {
+    const d = this.db();
+    const pub = buildPublic(d, { by: S.me.name, mediaUrl: id => localStorage.getItem('espActu.media.' + id) || '' });
+    if (what !== 'flash') download('content.json', pub.content);
+    download('flash.json', pub.flash);
+    d.settings = Object.assign({}, d.settings, { lastPublish: { at: isoMin(new Date()), by: S.me.name, ok: true, note: 'Mode démo : fichiers téléchargés, à déposer dans le dossier data/ du dépôt GitHub.' } });
+    this.put(d); return { ok: true, lastPublish: d.settings.lastPublish, log: ['content.json et flash.json téléchargés.'] };
+  },
+  async settings(s) { const d = this.db(); d.settings = Object.assign({}, d.settings, s); this.put(d); return { ok: true, settings: d.settings }; }
+};
+function download(name, obj) { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(obj, null, 2)], { type: 'application/json' })); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500); }
+const API = LIVE ? {
+  load: () => remote('load'), rev: () => remote('rev'),
+  save: (k, o, e) => remote('save', k, o, e || ''), remove: (k, id) => remote('remove', k, id),
+  upload: f => remote('upload', f), publish: w => remote('publish', w || 'all'),
+  settings: s => remote('settings', s), history: (k, id) => remote('history', k, id),
+  access: (op, email, role) => remote('access', op, email, role)
+} : Demo;
+
+/* URL d'un média pour l'affichage dans l'outil */
+function mediaSrc(id, size) {
+  if (!id) return '';
+  if (/^(https?:|data:|\.\.?\/)/.test(id)) return id;
+  if (!LIVE) return localStorage.getItem('espActu.media.' + id) || '';
+  return 'https://drive.google.com/thumbnail?id=' + encodeURIComponent(id) + '&sz=w' + (size || 600);
+}
+const parseGal = c => String(c || '').split(';').map(x => x.trim()).filter(Boolean).map(x => { const i = x.indexOf('|'), id = (i < 0 ? x : x.slice(0, i)).trim(), cap = i < 0 ? '' : x.slice(i + 1).trim(); return id.startsWith('v:') ? { k: 'v', id: id.slice(2), cap } : { k: 'i', id, cap }; }).filter(g => g.id);
+const galCell = g => (g || []).map(x => (x.k === 'v' ? 'v:' : '') + x.id + (x.cap ? '|' + x.cap.replace(/[;|]/g, ' ') : '')).join(';');
+
+/* =====================================================================
+   État
+   ===================================================================== */
+const S = {
+  db: { items: [], editions: [], comments: [], tempsForts: [], flashes: [], categories: [], team: [] },
+  me: { email: '', name: '' }, settings: {}, rev: 0,
+  view: 'dash', contentsMode: 'cols', filters: { q: '', cat: '', st: '', sup: '', arch: false, mine: false },
+  calMonth: today().slice(0, 7), edOpen: null, prevDate: '', prevAll: false, openForm: null
+};
+const VIEWS = [['dash', 'Accueil'], ['contents', 'Contenus'], ['calendar', 'Calendrier'], ['tf', 'Temps forts'], ['editions', 'Éditions', 'editeur'], ['flash', 'Flash Info', 'editeur'], ['diffusion', 'Diffusion TV']];
+const ROLE_RANK = { contributeur: 0, editeur: 1, admin: 2 };
+const ROLE_LABEL = { contributeur: 'Contributeur·rice', editeur: 'Éditeur·rice', admin: 'Admin' };
+const canRole = r => !r || (ROLE_RANK[S.me.role] || 0) >= ROLE_RANK[r];
+const isContrib = () => S.me.role === 'contributeur';
+const cats = () => S.db.categories.length ? S.db.categories : [{ id: 'campus', libelle: 'Campus', couleur: '#F0EB1E' }];
+const catOf = v => { const n = norm(v); return cats().find(c => norm(c.id) === n || norm(c.libelle) === n) || cats().find(c => c.id === 'campus') || cats()[0]; };
+const itemById = id => S.db.items.find(i => i.id === id);
+const myName = () => S.me.name || S.me.email || 'Anonyme';
+
+function setSync(state, text) { $('#sd').className = 'sd ' + state; $('#sync-t').textContent = text; }
+function renderPubInfo() {
+  const lp = S.settings.lastPublish;
+  $('#pub-t').textContent = lp ? (lp.ok ? 'Dernière publication : ' : 'Échec de publication : ') + fmtDT(lp.at) + (lp.by ? ' par ' + lp.by : '') : 'Pas encore publié';
+}
+
+async function loadAll(silent) {
+  try {
+    if (!silent) setSync('wait', 'Chargement…');
+    const r = await API.load();
+    S.db = Object.assign({ items: [], editions: [], comments: [], tempsForts: [], flashes: [], categories: [], team: [] }, r.db);
+    S.me = r.me || S.me; S.settings = r.settings || {}; S.rev = r.rev;
+    if (!S.me.name) { const t = S.db.team.find(p => p.email && norm(p.email) === norm(S.me.email)); if (t) S.me.name = t.nom; }
+    if (!S.me.name) S.me.name = localStorage.getItem('espActu.me') || '';
+    S.me.role = S.me.role || 'admin'; document.body.dataset.role = S.me.role;
+    if (!VIEWS.some(([k, , r]) => k === S.view && canRole(r))) S.view = 'dash';
+    setSync('ok', LIVE ? 'Connecté·e · données dans le Google Drive de l’école' : 'Mode démo · données dans ce navigateur');
+    renderPubInfo(); renderWho(); render();
+  } catch (e) {
+    console.error(e);
+    if (LIVE && e.code === 403) { Auth.token = null; try { sessionStorage.removeItem(TOKEN_KEY); google.accounts.id.disableAutoSelect(); } catch (_) {} return signInScreen(e.message); }
+    setSync('bad', 'Connexion impossible : ' + (e.message || e));
+    if (!silent) $('#app').innerHTML = `<div class="wrap"><div class="empty" style="margin-top:40px"><p><b>Impossible de lire la base.</b> ${h(e.message || e)}</p><button class="btn" onclick="loadAll()">Réessayer</button></div></div>`;
+  }
+}
+// Collaboration : on vérifie régulièrement si quelqu'un a modifié la base
+setInterval(async () => {
+  if (document.hidden || (LIVE && !Auth.valid(Auth.token))) return;
+  try {
+    const r = await API.rev();
+    if (r.rev && r.rev !== S.rev) {
+      if (S.openForm) { setSync('wait', 'Modifié par un·e collègue · actualise après enregistrement'); return; }
+      await loadAll(true); toast('Contenus mis à jour (modification d’un·e collègue).');
+    }
+  } catch (_) {}
+}, 40000);
+
+async function save(kind, obj, opts) {
+  opts = opts || {};
+  obj.modifie_par = myName();
+  const expected = opts.expected || '';
+  obj.modifie_le = isoMin(new Date()) + ':' + pad(new Date().getSeconds());
+  setSync('wait', 'Enregistrement…');
+  try {
+    const r = await API.save(kind, obj, opts.force ? '' : expected);
+    if (r.conflict) { setSync('ok', 'Conflit détecté'); return r; }
+    const list = S.db[kind]; const i = list.findIndex(x => x.id === obj.id);
+    if (i >= 0) list[i] = r.obj || obj; else list.push(r.obj || obj);
+    if (r.rev) S.rev = r.rev;
+    setSync('ok', LIVE ? 'Enregistré dans Google Drive' : 'Enregistré (démo)');
+    if (r.flashPublished) toast('Flash envoyé à l’écran (apparition sous 30 s à 1 min).');
+    return { ok: true };
+  } catch (e) { setSync('bad', 'Dernière modification non enregistrée'); toast('Enregistrement refusé : ' + (e.message || e), true); return { error: e }; }
+}
+async function removeRow(kind, id) {
+  try { const r = await API.remove(kind, id); S.db[kind] = S.db[kind].filter(x => x.id !== id); if (kind === 'items') S.db.comments = S.db.comments.filter(c => c.contenu_id !== id); if (r.rev) S.rev = r.rev; return true; }
+  catch (e) { toast('Suppression impossible : ' + (e.message || e), true); return false; }
+}
+
+/* =====================================================================
+   En-tête, navigation
+   ===================================================================== */
+function renderNav() {
+  const toVal = S.db.items.filter(i => stOf(i.statut) === 'À valider' && !yes(i.archive)).length;
+  const fl = S.db.flashes.filter(flashActive).length;
+  $('#nav').innerHTML = VIEWS.filter(([, , r]) => canRole(r)).map(([k, l]) => `<button type="button" data-v="${k}" ${S.view === k ? 'aria-current="page"' : ''}>${l}${k === 'contents' && toVal ? `<span class="cnt" title="À valider">${toVal}</span>` : ''}${k === 'flash' && fl ? `<span class="cnt">${fl}</span>` : ''}</button>`).join('');
+}
+$('#nav').addEventListener('click', e => { const b = e.target.closest('button[data-v]'); if (b) go(b.dataset.v); });
+function go(v) { if (!VIEWS.some(([k, , r]) => k === v && canRole(r))) v = 'dash'; S.view = v; render(); scrollTo(0, 0); try { history.replaceState(null, '', '#' + v); } catch (_) {} }
+function renderWho() {
+  const w = $('#who');
+  if (LIVE && S.me.email) { w.innerHTML = `<span class="av" title="${h(S.me.email)}">${h(initials(S.me.name || S.me.email))}</span><span>${h(S.me.name || S.me.email)}<br><span class="small muted">${h(ROLE_LABEL[S.me.role] || '')}</span></span><button class="linkbtn" id="logout" type="button">Déconnexion</button>`; $('#logout').onclick = () => Auth.signOut(); return; }
+  else { w.innerHTML = `<label for="me">Tu es</label><input id="me" class="inp" placeholder="Ton prénom" value="${h(S.me.name)}">`; $('#me').addEventListener('change', e => { S.me.name = e.target.value.trim(); localStorage.setItem('espActu.me', S.me.name); }); }
+}
+$('#refresh').addEventListener('click', () => loadAll());
+
+function render() {
+  renderNav();
+  const fn = { dash: vDash, contents: vContents, calendar: vCalendar, tf: vTf, editions: vEditions, flash: vFlash, diffusion: vDiffusion }[S.view] || vDash;
+  fn();
+}
+
+/* =====================================================================
+   Vignette d'un contenu
+   ===================================================================== */
+function thumb(it, size) {
+  const c = catOf(it.categorie), g = parseGal(it.galerie);
+  const img = it.image_id ? mediaSrc(it.image_id, size) : (g.find(x => x.k === 'i') ? mediaSrc(g.find(x => x.k === 'i').id, size) : '');
+  const duo = img && norm(it.filtre_photo) !== 'non';
+  return `<div class="th ${duo ? 'duo' : ''}" style="--acc:${h(c.couleur)}">${img ? `<img src="${h(img)}" alt="" loading="lazy">` : `<span class="ph">${h((c.libelle || '').slice(0, 1))}</span>`}${g.length ? `<span class="gl">▦ ${g.length}</span>` : ''}</div>`;
+}
+const chipCat = it => { const c = catOf(it.categorie); return `<span class="chip"><i style="background:${h(c.couleur)}"></i>${h(c.libelle)}</span>`; };
+function badges(it) {
+  const t = today(), out = [];
+  if (yes(it.archive)) out.push('<span class="badge b-off">Archivé</span>');
+  if (['Urgente', 'Haute'].includes(it.priorite)) out.push(`<span class="badge b-urg">${it.priorite === 'Urgente' ? 'Urgent' : 'Priorité haute'}</span>`);
+  const st = stOf(it.statut);
+  if (it.date_publication && it.date_publication < t && !['Programmé', 'Publié'].includes(st) && !yes(it.archive)) out.push('<span class="badge b-late">En retard</span>');
+  else if (it.date_publication && diffDays(t, it.date_publication) === 1 && !['Programmé', 'Publié'].includes(st)) out.push('<span class="badge b-soon">J-1</span>');
+  if (it.date_expiration && it.date_expiration < t) out.push('<span class="badge b-off">Expiré</span>');
+  if (isTV(it) && onScreenNow(it)) out.push('<span class="badge b-tv" title="Visible sur l’écran TV">● À l’écran</span>');
+  return out.join(' ');
+}
+function onScreenNow(it) {
+  const t = today();
+  return !yes(it.archive) && ['Programmé', 'Publié'].includes(stOf(it.statut)) && (!it.date_publication || it.date_publication <= t) && (!it.date_expiration || it.date_expiration >= t);
+}
+function flashActive(f) {
+  const n = isoMin(new Date()) + ':00';
+  return norm(f.statut) === 'programme' && (!f.debut || f.debut <= n) && (!f.fin || f.fin > n);
+}
+
+/* =====================================================================
+   Accueil
+   ===================================================================== */
+function vDash() {
+  const its = S.db.items.filter(i => !yes(i.archive));
+  const by = st => its.filter(i => stOf(i.statut) === st);
+  const live = its.filter(i => isTV(i) && onScreenNow(i));
+  const toCheck = by('À valider').concat(by('En préparation')).slice(0, 8);
+  const props = its.filter(i => /proposition/i.test(i.mots_cles || '') && stOf(i.statut) === 'À traiter').slice(0, 6);
+  const t = today();
+  const tfs = S.db.tempsForts.filter(x => (x.date_fin || x.date_debut) >= t).sort((a, b) => a.date_debut.localeCompare(b.date_debut)).slice(0, 5);
+  const fl = S.db.flashes.filter(flashActive);
+  const li = it => `<li data-open="${h(it.id)}">${thumb(it, 200)}<div><div class="t">${h(it.titre)}</div><div class="meta">${chipCat(it)} <span class="small muted">${h(stOf(it.statut))}${it.date_publication ? ' · ' + fmtD(it.date_publication) : ''}</span></div></div><span>${badges(it)}</span></li>`;
+  $('#app').innerHTML = `<div class="wrap">
+    <div class="head"><div><p class="kicker">${h(new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }))}</p><h1>Bonjour${S.me.name ? ' ' + h(S.me.name.split(' ')[0]) : ''}</h1></div>
+      <div class="tools"><button class="btn alt" data-new="1">+ Nouveau contenu</button><button class="btn red ed-only" data-go="flash">⚡ Flash Info</button><button class="btn ed-only" id="d-pub">Publier sur l’écran</button></div></div>
+    <div class="stats">${STATUTS.map(s => `<button class="stat" data-st="${h(s)}"><b>${by(s).length}</b><span><i class="sdot" style="background:${ST_COL[s]}"></i>${h(s)}</span></button>`).join('')}</div>
+    <div class="dash">
+      <div style="display:grid;gap:22px;align-content:start">
+        <section class="panel"><h2 class="disp" style="font-size:22px">À relire et valider</h2><p class="small muted">Contenus « À valider » et « En préparation ».</p>
+          ${toCheck.length ? `<ul class="list" style="margin-top:10px">${toCheck.map(li).join('')}</ul>` : '<p class="muted" style="margin-top:10px">Rien en attente. 🎉</p>'}</section>
+        ${props.length ? `<section class="panel l"><h2 class="disp" style="font-size:22px">Propositions de la veille</h2><p class="small muted">Vérifier la source, les dates et le lien avant de sélectionner.</p><ul class="list" style="margin-top:10px">${props.map(li).join('')}</ul></section>` : ''}
+      </div>
+      <div style="display:grid;gap:22px;align-content:start">
+        <section class="panel"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><h2 class="disp" style="font-size:22px">L’écran en ce moment</h2><button class="btn sm alt" data-go="diffusion">Aperçu</button></div>
+          <div class="mini" id="d-mini"></div><p class="small muted" style="margin-top:8px">${live.length} contenu${live.length > 1 ? 's' : ''} à l’écran aujourd’hui${fl.length ? ` · <b style="color:var(--red)">${fl.length} flash actif</b>` : ''}.</p></section>
+        <section class="panel k"><h2 class="disp" style="font-size:22px;color:var(--yellow)">Temps forts</h2>
+          ${tfs.length ? `<ul style="list-style:none;padding:0;margin:10px 0 0;display:grid;gap:8px">${tfs.map(x => `<li style="display:grid;grid-template-columns:88px 1fr;gap:10px;border-top:1px solid rgba(255,255,255,.15);padding-top:8px"><b class="disp">${fmtD(x.date_debut)}</b><span>${h(x.titre)} ${yes(x.afficher_tv) ? '<span class="badge b-tv">TV</span>' : ''}</span></li>`).join('')}</ul>` : '<p style="opacity:.7;margin-top:8px">Aucun temps fort à venir.</p>'}
+          <button class="btn sm yel" style="margin-top:14px" data-go="tf">Gérer les temps forts</button></section>
+      </div>
+    </div></div>`;
+  bindCommon();
+  $('#d-pub').onclick = () => publish('all');
+  $$('.stat').forEach(b => b.onclick = () => { S.filters.st = b.dataset.st; S.contentsMode = 'list'; go('contents'); });
+  mountMini($('#d-mini'));
+}
+function bindCommon(root) {
+  root = root || $('#app');
+  $$('[data-open]', root).forEach(el => el.addEventListener('click', e => { if (e.target.closest('button:not([data-open]),a,input,select')) return; openItem(el.dataset.open); }));
+  $$('[data-new]', root).forEach(b => b.onclick = () => openItem(null, b.dataset.date ? { date_publication: b.dataset.date } : null));
+  $$('[data-go]', root).forEach(b => b.onclick = () => go(b.dataset.go));
+}
+
+/* =====================================================================
+   Contenus : liste et colonnes
+   ===================================================================== */
+function filtered() {
+  const f = S.filters, q = norm(f.q);
+  return S.db.items.filter(it => {
+    if (!f.arch && yes(it.archive)) return false;
+    if (f.cat && catOf(it.categorie).id !== f.cat) return false;
+    if (f.st && stOf(it.statut) !== f.st) return false;
+    if (f.sup === 'tv' && !isTV(it)) return false;
+    if (f.sup === 'news' && norm(it.support) === 'tv') return false;
+    if (f.mine && norm(it.responsable) !== norm(S.me.name)) return false;
+    if (q && !norm([it.titre, it.accroche, it.resume_court, it.mots_cles, it.responsable, it.source].join(' ')).includes(q)) return false;
+    return true;
+  }).sort((a, b) => String(b.modifie_le || b.date_creation || '').localeCompare(String(a.modifie_le || a.date_creation || '')));
+}
+function vContents() {
+  const f = S.filters;
+  $('#app').innerHTML = `<div class="wrap" style="max-width:${S.contentsMode === 'cols' ? '1760px' : '1440px'}">
+    <div class="head"><div><p class="kicker">Suivi éditorial</p><h1>Contenus</h1></div>
+      <div class="tools"><div class="seg" role="group" aria-label="Affichage"><button type="button" data-m="cols" aria-pressed="${S.contentsMode === 'cols'}">Colonnes</button><button type="button" data-m="list" aria-pressed="${S.contentsMode === 'list'}">Liste</button></div><button class="btn" data-new="1">+ Nouveau contenu</button></div></div>
+    <div class="toolbar">
+      <input type="search" class="inp" id="f-q" placeholder="Rechercher un titre, un mot-clé, une personne…" value="${h(f.q)}">
+      <select class="inp" id="f-cat"><option value="">Toutes catégories</option>${cats().map(c => `<option value="${h(c.id)}" ${f.cat === c.id ? 'selected' : ''}>${h(c.libelle)}</option>`).join('')}</select>
+      ${S.contentsMode === 'list' ? `<select class="inp" id="f-st"><option value="">Tous statuts</option>${STATUTS.map(s => `<option ${f.st === s ? 'selected' : ''}>${s}</option>`).join('')}</select>` : ''}
+      <select class="inp" id="f-sup"><option value="">Tous supports</option><option value="tv" ${f.sup === 'tv' ? 'selected' : ''}>Écran TV</option><option value="news" ${f.sup === 'news' ? 'selected' : ''}>Magazine NEWS</option></select>
+      <label class="small"><input type="checkbox" id="f-mine" ${f.mine ? 'checked' : ''}> Mes contenus</label>
+      <label class="small"><input type="checkbox" id="f-arch" ${f.arch ? 'checked' : ''}> Archives</label>
+    </div>
+    <div id="c-body"></div></div>`;
+  bindCommon();
+  $$('[data-m]').forEach(b => b.onclick = () => { S.contentsMode = b.dataset.m; if (S.contentsMode === 'cols') S.filters.st = ''; vContents(); });
+  const upd = () => { f.q = $('#f-q').value; f.cat = $('#f-cat').value; f.st = $('#f-st') ? $('#f-st').value : ''; f.sup = $('#f-sup').value; f.mine = $('#f-mine').checked; f.arch = $('#f-arch').checked; contentsBody(); };
+  $('#f-q').addEventListener('input', upd); $$('.toolbar select,.toolbar input[type=checkbox]').forEach(x => x.addEventListener('change', upd));
+  contentsBody();
+}
+function contentsBody() {
+  const rows = filtered(), el = $('#c-body');
+  if (S.contentsMode === 'list') {
+    el.innerHTML = `<p class="small muted" style="margin-bottom:8px">${rows.length} contenu${rows.length > 1 ? 's' : ''}</p>` + (rows.length ? `<div class="rows">${rows.map(it => `
+      <div class="rowc ${yes(it.archive) ? 'arch' : ''}" data-open="${h(it.id)}">${thumb(it, 200)}
+        <div><button class="t" type="button" data-open="${h(it.id)}">${h(it.titre || '(sans titre)')}</button>
+          <div class="meta">${chipCat(it)}<span class="chip"><i style="background:${ST_COL[stOf(it.statut)]}"></i>${h(stOf(it.statut))}</span><span class="chip">${h(it.support || 'NEWS + TV')}</span>${badges(it)}</div></div>
+        <div class="dates">${it.date_publication ? 'Publication ' + fmtD(it.date_publication) : 'Sans date'}${it.date_expiration ? '<br>Jusqu’au ' + fmtD(it.date_expiration) : ''}${it.responsable ? '<br>Resp. ' + h(it.responsable) : ''}</div>
+        <div class="acts"><button class="btn sm alt" data-dup="${h(it.id)}">Dupliquer</button><button class="btn sm alt" data-arc="${h(it.id)}">${yes(it.archive) ? 'Désarchiver' : 'Archiver'}</button></div>
+      </div>`).join('')}</div>` : `<div class="empty"><p>${S.db.items.length ? 'Aucun contenu ne correspond à ces filtres.' : 'La base est vide : crée un premier contenu.'}</p></div>`);
+  } else {
+    el.innerHTML = `<div class="board">${STATUTS.map(st => { const l = rows.filter(i => stOf(i.statut) === st); return `
+      <section class="col" data-col="${h(st)}"><header><span><i class="sdot" style="background:${ST_COL[st]}"></i>${h(st)}</span><span>${l.length}</span></header>
+      <div class="cards">${l.map(it => `<article class="card" draggable="true" data-id="${h(it.id)}">${thumb(it, 300)}<h3 data-open="${h(it.id)}">${h(it.titre || '(sans titre)')}</h3>
+        <div class="meta">${chipCat(it)}${it.date_publication ? `<span class="small muted">${fmtD(it.date_publication)}</span>` : ''}${it.responsable ? `<span class="av" title="${h(it.responsable)}">${h(initials(it.responsable))}</span>` : ''}${badges(it)}</div></article>`).join('')}</div></section>`; }).join('')}</div>
+      <p class="small muted">Glisse une carte dans une autre colonne pour changer son statut.</p>`;
+    dnd($$('.card', el), $$('.col', el), async (id, col) => {
+      const it = itemById(id); if (!it || stOf(it.statut) === col.dataset.col) return;
+      const prevSt = it.statut; it.statut = col.dataset.col; contentsBody();
+      const r = await save('items', Object.assign({}, it), { expected: it.modifie_le });
+      if (!r.ok) { it.statut = prevSt; contentsBody(); if (r.conflict) toast('Ce contenu vient d’être modifié par ' + (r.current.modifie_par || 'un·e collègue') + ' : actualise.', true); }
+      else { renderNav(); toast('« ' + it.titre + ' » → ' + col.dataset.col); }
+    });
+  }
+  bindCommon(el);
+  $$('[data-dup]', el).forEach(b => b.onclick = () => duplicate(b.dataset.dup));
+  $$('[data-arc]', el).forEach(b => b.onclick = async () => { const it = itemById(b.dataset.arc); const o = Object.assign({}, it, { archive: yes(it.archive) ? 'NON' : 'OUI' }); if ((await save('items', o)).ok) { contentsBody(); renderNav(); } });
+}
+/* Glisser-déposer générique */
+function dnd(drags, drops, onDrop) {
+  drags.forEach(d => {
+    d.addEventListener('dragstart', e => { e.dataTransfer.setData('text/plain', d.dataset.id); e.dataTransfer.effectAllowed = 'move'; d.classList.add('drag'); });
+    d.addEventListener('dragend', () => d.classList.remove('drag'));
+  });
+  drops.forEach(z => {
+    z.addEventListener('dragover', e => { e.preventDefault(); z.classList.add('over'); });
+    z.addEventListener('dragleave', e => { if (!z.contains(e.relatedTarget)) z.classList.remove('over'); });
+    z.addEventListener('drop', e => { e.preventDefault(); z.classList.remove('over'); const id = e.dataTransfer.getData('text/plain'); if (id) onDrop(id, z, e); });
+  });
+}
+async function duplicate(id) {
+  const src = itemById(id); if (!src) return;
+  const o = Object.assign({}, src, { id: uid('c'), titre: src.titre + ' (copie)', statut: 'Brouillon', archive: 'NON', date_creation: today(), edition_id: '', ordre: '', modifie_le: '' });
+  if ((await save('items', o)).ok) { toast('Copie créée.'); openItem(o.id); render(); }
+}
+
+/* =====================================================================
+   Fiche contenu (formulaire complet)
+   ===================================================================== */
+function modal(html, narrow) {
+  // Les volets s'empilent (ex. aperçu TV par-dessus un formulaire en cours)
+  const root = $('#modal-root');
+  const wrap = document.createElement('div');
+  wrap.innerHTML = `<div class="modal ${narrow ? 'center' : ''}" role="dialog" aria-modal="true"><div class="mback"></div><div class="sheet ${narrow ? 'narrow' : ''}"><button class="mx" type="button" aria-label="Fermer">✕</button><div class="mbody">${html}</div></div></div>`;
+  root.appendChild(wrap);
+  const close = () => { wrap.remove(); if (!root.children.length) S.openForm = null; document.removeEventListener('keydown', esc); };
+  const esc = e => { if (e.key === 'Escape' && root.lastElementChild === wrap) close(); };
+  document.addEventListener('keydown', esc);
+  $('.mback', wrap).onclick = close; $('.mx', wrap).onclick = close;
+  return { el: $('.sheet', wrap), close };
+}
+const opt = (list, v) => list.map(x => `<option ${x === v ? 'selected' : ''}>${h(x)}</option>`).join('');
+const radios = (name, list, v) => `<div class="opts">${list.map(([val, lab]) => `<label><input type="radio" name="${name}" value="${h(val)}" ${val === v ? 'checked' : ''}><span>${h(lab)}</span></label>`).join('')}</div>`;
+
+function openItem(id, preset) {
+  const isNew = !id;
+  const base = id ? itemById(id) : null;
+  if (id && !base) return toast('Contenu introuvable (supprimé ?).', true);
+  const v = Object.assign({ id: uid('c'), statut: 'À traiter', priorite: 'Normale', support: 'NEWS + TV', categorie: (cats()[0] || {}).id, date_creation: today(), archive: 'NON', filtre_photo: 'OUI', photo_entiere: 'NON', qr_tv: 'NON', format_tv: '' }, base || {}, preset || {});
+  const expected = base ? base.modifie_le : '';
+  let gal = parseGal(v.galerie);
+  const team = S.db.team.map(p => p.nom).filter(Boolean);
+  const fmtv = norm(v.format_tv).startsWith('group') ? 'Groupée' : norm(v.format_tv).startsWith('plein') ? 'Plein écran' : norm(v.format_tv) === 'seule' ? 'Seule' : '';
+  const locked = isContrib() && !isNew && !['Brouillon', 'À traiter'].includes(stOf(v.statut));
+  const stList = isContrib() ? ['Brouillon', 'À traiter'] : STATUTS;
+  const coms = () => S.db.comments.filter(c => c.contenu_id === v.id).sort((a, b) => String(a.date).localeCompare(String(b.date)));
+  const m = modal(`
+    <p class="kicker">${isNew ? 'Nouveau contenu' : 'Fiche contenu'}${base && base.modifie_par ? ` · modifié par ${h(base.modifie_par)} le ${h(fmtDT(base.modifie_le))}` : ''}</p>
+    <h2 id="i-h">${h(v.titre || 'Nouveau contenu')}</h2>
+    ${locked ? '<p class="lock">Ce contenu est en cours de traitement par l’équipe éditoriale : tu peux le consulter et le commenter.</p>' : ''}
+    <form id="iform" autocomplete="off">
+      <div class="grid2" style="margin-top:16px">
+        <div class="field full"><label for="i-titre">Titre *</label><input id="i-titre" class="inp" required maxlength="120" value="${h(v.titre)}" placeholder="Court, lisible de loin"><span class="count" data-c="i-titre" data-max="70"></span></div>
+        <div class="field full"><label for="i-acc">Accroche (affichée sur l’écran)</label><textarea id="i-acc" class="inp" rows="2" style="min-height:64px">${h(v.accroche)}</textarea><span class="count" data-c="i-acc" data-max="160"></span></div>
+        <div class="field full"><label for="i-res">Résumé court</label><input id="i-res" class="inp" value="${h(v.resume_court)}"></div>
+        <div class="field full"><label for="i-desc">Description <span class="hint">(pour l’horoscope : une ligne par signe « Bélier : texte »)</span></label><textarea id="i-desc" class="inp" rows="4">${h(v.description)}</textarea></div>
+        <div class="field"><label for="i-cat">Catégorie</label><select id="i-cat" class="inp">${cats().map(c => `<option value="${h(c.id)}" ${catOf(v.categorie).id === c.id ? 'selected' : ''}>${h(c.libelle)}</option>`).join('')}</select></div>
+        <div class="field"><label for="i-st">Statut</label><select id="i-st" class="inp" ${locked ? 'disabled' : ''}>${opt(locked ? [stOf(v.statut)] : stList, stOf(v.statut))}</select>${isContrib() && !locked ? '<span class="hint">Un·e éditeur·rice fera avancer le contenu.</span>' : ''}</div>
+        <div class="field"><label for="i-prio">Priorité</label><select id="i-prio" class="inp">${opt(PRIOS, v.priorite)}</select></div>
+        <div class="field"><label for="i-sup">Support</label><select id="i-sup" class="inp">${opt(SUPPORTS, SUPPORTS.find(s => norm(s) === norm(v.support)) || 'NEWS + TV')}</select></div>
+        <div class="field"><label for="i-resp">Responsable</label><input id="i-resp" class="inp" list="team-l" value="${h(v.responsable)}"><datalist id="team-l">${team.map(n => `<option value="${h(n)}">`).join('')}</datalist></div>
+        <div class="field"><label for="i-tags">Mots-clés</label><input id="i-tags" class="inp" value="${h(v.mots_cles)}" placeholder="séparés par des virgules"></div>
+      </div>
+      <fieldset><legend>Programmation</legend><div class="grid3">
+        <div class="field"><label for="i-pub">Publication (à partir du)</label><input type="date" id="i-pub" class="inp" value="${h(v.date_publication)}"></div>
+        <div class="field"><label for="i-exp">Expiration (jusqu’au)</label><input type="date" id="i-exp" class="inp" value="${h(v.date_expiration)}"></div>
+        <div class="field"><label for="i-evt">Date de l’événement</label><input type="date" id="i-evt" class="inp" value="${h(v.date_evenement)}"><span class="hint">Pour l’agenda de la semaine.</span></div>
+      </div><p class="hint small" style="margin-top:8px">L’écran affiche le contenu entre ces dates s’il est « Programmé » ou « Publié ». Pense à une date d’expiration pour un événement.</p></fieldset>
+      <fieldset><legend>Écran TV</legend><div class="grid2">
+        <div class="field full"><span class="lab">Format sur l’écran</span>${radios('i-fmt', [['', 'Auto'], ['Seule', 'Info seule'], ['Groupée', 'Groupée'], ['Plein écran', 'Photo plein écran']], fmtv)}<span class="hint">Auto : seule si priorité haute, sinon groupée par 2 ou 3. Une galerie a toujours son propre écran.</span></div>
+        <div class="field"><span class="lab">Filtre coloré ESP sur la photo</span>${radios('i-fil', [['OUI', 'Oui'], ['NON', 'Non (photo d’origine)']], norm(v.filtre_photo) === 'non' ? 'NON' : 'OUI')}</div>
+        <div class="field"><span class="lab">Cadrage</span>${radios('i-fit', [['NON', 'Recadrée (remplit le cadre)'], ['OUI', 'Photo entière']], yes(v.photo_entiere) ? 'OUI' : 'NON')}</div>
+        <div class="field full"><span class="lab">Photo principale</span><div class="media-ed"><div id="i-img"></div><div style="display:grid;gap:6px"><label class="btn sm alt">Choisir une photo<input type="file" id="i-file" accept="image/*" hidden></label><button type="button" class="btn sm alt" id="i-noimg">Retirer</button><span class="hint">Réduite à 1600 px. Sans photo, une illustration aux couleurs de la catégorie est générée.</span></div></div></div>
+      </div></fieldset>
+      <fieldset><legend>QR code &amp; lien</legend><div class="grid2">
+        <div class="field full"><label for="i-link">Lien (événement, projet, inscription)</label><input type="url" id="i-link" class="inp" value="${h(v.lien_externe)}" placeholder="https://"></div>
+        <div class="field"><span class="lab">Afficher un QR code vers ce lien</span>${radios('i-qr', [['OUI', 'Oui'], ['NON', 'Non']], yes(v.qr_tv) ? 'OUI' : 'NON')}</div>
+        <div class="field"><label for="i-qrl">Texte sous le QR code</label><input id="i-qrl" class="inp" maxlength="40" value="${h(v.legende_qr)}" placeholder="Inscription, Voir le projet…"></div>
+        <div class="field full"><label for="i-src">Source</label><input id="i-src" class="inp" value="${h(v.source)}"></div>
+      </div></fieldset>
+      <fieldset><legend>Galerie (projets étudiants)</legend>
+        <p class="hint small">Photos et vidéos (MP4/WebM, 20 Mo max., lues sans le son) qui défilent avec leur légende : 5 s par photo, une vidéo jusqu’à sa fin.</p>
+        <ul class="gal" id="i-gal"></ul>
+        <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap"><label class="btn sm alt">+ Photos<input type="file" id="i-gphoto" accept="image/*" multiple hidden></label><label class="btn sm alt">+ Vidéo<input type="file" id="i-gvideo" accept="video/mp4,video/webm" hidden></label></div>
+      </fieldset>
+      <fieldset><legend>Notes internes</legend><textarea id="i-notes" class="inp" rows="3" placeholder="Jamais affichées à l’écran">${h(v.notes_internes)}</textarea></fieldset>
+      <div id="i-conflict"></div>
+      <div class="foot"><div>${locked ? '' : '<button class="btn" type="submit">Enregistrer</button>'}<button class="btn alt" type="button" id="i-prev">Aperçu TV</button></div>
+        <div>${isNew ? '' : `<button class="btn alt" type="button" id="i-dup">Dupliquer</button><button class="btn alt ed-only" type="button" id="i-arc">${yes(v.archive) ? 'Désarchiver' : 'Archiver'}</button><button class="btn dgr ed-only" type="button" id="i-del">Supprimer</button>`}</div></div>
+    </form>
+    ${isNew ? '' : `<section style="margin-top:26px"><h3 class="disp" style="font-size:20px">Commentaires</h3><ul class="coms" id="i-coms"></ul>
+      <form id="cform" style="display:grid;gap:8px;margin-top:10px"><textarea class="inp" id="c-txt" rows="2" style="min-height:60px" placeholder="Un retour, une question pour l’équipe…" required></textarea><div><button class="btn sm" type="submit">Commenter</button></div></form></section>
+      <section style="margin-top:26px"><h3 class="disp" style="font-size:20px">Historique</h3><p class="small muted">Chaque enregistrement est conservé dans l’onglet « Historique » du Google Sheet.</p><div id="i-hist"><button class="btn sm alt" type="button" id="i-hbtn" style="margin-top:8px">Voir les versions</button></div></section>`}
+  `);
+  S.openForm = v.id;
+  const el = m.el;
+  const counts = () => $$('.count', el).forEach(c => { const f = $('#' + c.dataset.c, el); const n = f.value.length, max = +c.dataset.max; c.textContent = n + ' / ' + max; c.classList.toggle('over', n > max); });
+  $$('#i-titre,#i-acc', el).forEach(x => x.addEventListener('input', counts)); counts();
+  $('#i-titre', el).addEventListener('input', e => $('#i-h', el).textContent = e.target.value || 'Nouveau contenu');
+  const drawImg = () => { $('#i-img', el).innerHTML = thumb(Object.assign({}, v, { galerie: '', filtre_photo: el.querySelector('[name=i-fil]:checked').value }), 400); };
+  drawImg(); $$('[name=i-fil]', el).forEach(r => r.onchange = drawImg);
+  $('#i-file', el).onchange = async e => { const f = e.target.files[0]; if (!f) return; const r = await uploadFile(f, 'image'); if (r) { v.image_id = r.id; drawImg(); } };
+  $('#i-noimg', el).onclick = () => { v.image_id = ''; drawImg(); };
+  const drawGal = () => {
+    $('#i-gal', el).innerHTML = gal.map((g, k) => `<li><div class="th">${g.k === 'v' ? '<span class="ph">▶</span>' : `<img src="${h(mediaSrc(g.id, 200))}" alt="">`}</div><input class="inp" data-cap="${k}" value="${h(g.cap)}" placeholder="Légende : projet, nom, promo"><div class="ctl"><button type="button" data-up="${k}" aria-label="Monter">▲</button><button type="button" data-down="${k}" aria-label="Descendre">▼</button><button type="button" data-rm="${k}" aria-label="Retirer">✕</button></div></li>`).join('') || '<li class="small muted" style="display:block;padding:10px">Aucun média.</li>';
+    $$('[data-cap]', el).forEach(i => i.oninput = () => gal[+i.dataset.cap].cap = i.value);
+    $$('[data-up]', el).forEach(b => b.onclick = () => { const k = +b.dataset.up; if (k > 0) { [gal[k - 1], gal[k]] = [gal[k], gal[k - 1]]; drawGal(); } });
+    $$('[data-down]', el).forEach(b => b.onclick = () => { const k = +b.dataset.down; if (k < gal.length - 1) { [gal[k + 1], gal[k]] = [gal[k], gal[k + 1]]; drawGal(); } });
+    $$('[data-rm]', el).forEach(b => b.onclick = () => { gal.splice(+b.dataset.rm, 1); drawGal(); });
+  };
+  drawGal();
+  $('#i-gphoto', el).onchange = async e => { for (const f of e.target.files) { const r = await uploadFile(f, 'image'); if (r) { gal.push({ k: 'i', id: r.id, cap: '' }); drawGal(); } } e.target.value = ''; };
+  $('#i-gvideo', el).onchange = async e => { const f = e.target.files[0]; if (!f) return; if (f.size > 20 * 1024 * 1024) return toast('Vidéo trop lourde (20 Mo maximum).', true); const r = await uploadFile(f, 'video'); if (r) { gal.push({ k: 'v', id: r.id, cap: '' }); drawGal(); } e.target.value = ''; };
+
+  const collect = () => {
+    const val = s => $(s, el).value.trim(), rad = n => el.querySelector(`[name=${n}]:checked`).value;
+    return Object.assign({}, v, {
+      titre: val('#i-titre'), accroche: val('#i-acc'), resume_court: val('#i-res'), description: $('#i-desc', el).value,
+      categorie: val('#i-cat'), statut: val('#i-st'), priorite: val('#i-prio'), support: val('#i-sup'), responsable: val('#i-resp'), mots_cles: val('#i-tags'),
+      date_publication: val('#i-pub'), date_expiration: val('#i-exp'), date_evenement: val('#i-evt'),
+      format_tv: rad('i-fmt'), filtre_photo: rad('i-fil'), photo_entiere: rad('i-fit'), qr_tv: rad('i-qr'), legende_qr: val('#i-qrl'),
+      lien_externe: val('#i-link'), source: val('#i-src'), notes_internes: $('#i-notes', el).value, galerie: galCell(gal),
+      semaine: val('#i-pub') ? val('#i-pub').slice(0, 4) + '-S' + pad(weekNum(val('#i-pub'))) : (v.semaine || '')
+    });
+  };
+  const check = o => {
+    if (!o.titre) return 'Le titre est obligatoire.';
+    if (o.date_expiration && o.date_publication && o.date_expiration < o.date_publication) return 'La date d’expiration est avant la date de publication.';
+    if (yes(o.qr_tv) && !/^https?:\/\//.test(o.lien_externe)) return 'Pour afficher un QR code, indique un lien qui commence par https://';
+    if (norm(o.format_tv).startsWith('plein') && !o.image_id) return 'Le format « Photo plein écran » demande une photo principale.';
+    if (['Programmé', 'Publié'].includes(o.statut) && isTV(o) && !o.date_expiration) return null; // simple conseil, pas bloquant
+    return null;
+  };
+  const doSave = async force => {
+    const o = collect(), err = check(o); if (err) return toast(err, true);
+    const r = await save('items', o, { expected, force });
+    if (r.conflict) {
+      $('#i-conflict', el).innerHTML = `<div class="conflict"><b>Ce contenu a été modifié par ${h(r.current.modifie_par || 'un·e collègue')} (${h(fmtDT(r.current.modifie_le))}) pendant que tu l’éditais.</b><span class="small">Recharge pour voir sa version (tes saisies seront perdues), ou écrase-la avec la tienne.</span><div style="display:flex;gap:8px"><button type="button" class="btn sm alt" id="cf-reload">Recharger sa version</button><button type="button" class="btn sm dgr" id="cf-force">Écraser avec ma version</button></div></div>`;
+      $('#cf-reload').onclick = async () => { m.close(); await loadAll(true); openItem(o.id); };
+      $('#cf-force').onclick = () => doSave(true);
+      return;
+    }
+    if (r.ok) { m.close(); toast(isNew ? 'Contenu créé.' : 'Contenu enregistré.'); render(); }
+  };
+  $('#iform', el).onsubmit = e => { e.preventDefault(); doSave(false); };
+  $('#i-prev', el).onclick = () => previewModal(collect());
+  if (!isNew) {
+    $('#i-dup', el).onclick = () => { m.close(); duplicate(v.id); };
+    $('#i-arc', el).onclick = async () => { const o = Object.assign({}, base, { archive: yes(base.archive) ? 'NON' : 'OUI' }); if ((await save('items', o)).ok) { m.close(); render(); toast(yes(o.archive) ? 'Archivé : retiré de l’écran, conservé dans la base.' : 'Désarchivé.'); } };
+    $('#i-del', el).onclick = () => confirmBox(`Supprimer définitivement « ${h(v.titre)} » et ses commentaires ? Préfère « Archiver » pour garder une trace.`, 'Supprimer', async () => { if (await removeRow('items', v.id)) { m.close(); render(); toast('Contenu supprimé.'); } });
+    const drawComs = () => { $('#i-coms', el).innerHTML = coms().map(c => `<li><header><span class="av">${h(initials(c.auteur))}</span><b>${h(c.auteur)}</b><span>${h(fmtDT(c.date))}</span></header><p style="margin-top:4px;white-space:pre-wrap">${h(c.texte)}</p></li>`).join('') || '<li class="muted small">Pas encore de commentaire.</li>'; };
+    drawComs();
+    $('#i-hbtn', el).onclick = () => showHistory($('#i-hist', el), 'items', v.id, () => { m.close(); render(); openItem(v.id); }, locked);
+    $('#cform', el).onsubmit = async e => { e.preventDefault(); const t = $('#c-txt', el).value.trim(); if (!t) return; const c = { id: uid('k'), contenu_id: v.id, auteur: myName(), texte: t, date: isoMin(new Date()) }; if ((await save('comments', c)).ok) { $('#c-txt', el).value = ''; drawComs(); } };
+  }
+  setTimeout(() => $('#i-titre', el).focus(), 50);
+}
+/* Historique des versions d'un élément (lu dans l'onglet « Historique ») */
+const H_LABEL = { titre: 'titre', accroche: 'accroche', resume_court: 'résumé', description: 'description', categorie: 'catégorie', statut: 'statut', priorite: 'priorité', support: 'support', image_id: 'photo', lien_externe: 'lien', date_publication: 'publication', date_expiration: 'expiration', date_evenement: 'événement', responsable: 'responsable', notes_internes: 'notes', archive: 'archive', format_tv: 'format', qr_tv: 'QR', filtre_photo: 'filtre', galerie: 'galerie', photo_entiere: 'cadrage', legende_qr: 'texte du QR', mots_cles: 'mots-clés', source: 'source' };
+const H_ACTION = { creation: 'Création', modification: 'Modification', suppression: 'Suppression' };
+function changedFields(a, b) {
+  if (!a || !b) return [];
+  return Object.keys(Object.assign({}, a, b)).filter(k => !/^modifie_/.test(k) && k !== 'semaine' && String(a[k] == null ? '' : a[k]) !== String(b[k] == null ? '' : b[k])).map(k => H_LABEL[k] || k);
+}
+async function showHistory(box, kind, id, after, readOnly) {
+  box.innerHTML = '<p class="small muted" style="margin-top:8px">Chargement…</p>';
+  let list;
+  try { list = await API.history(kind, id); } catch (e) { box.innerHTML = `<p class="small" style="color:var(--red)">${h(e.message || e)}</p>`; return; }
+  if (!list.length) { box.innerHTML = '<p class="small muted" style="margin-top:8px">Pas encore d’historique pour ce contenu : les versions sont conservées à chaque enregistrement fait dans l’outil.</p>'; return; }
+  box.innerHTML = `<ul class="hist">${list.map((x, k) => {
+    const ch = changedFields(x.avant, x.apres);
+    const st = x.apres && x.avant && x.apres.statut !== x.avant.statut ? ` · ${h(x.avant.statut)} → ${h(x.apres.statut)}` : '';
+    return `<li><header><span class="av">${h(initials(x.par))}</span><b>${h(x.par || '?')}</b><span class="muted">${h(fmtDT(x.date))}</span><span class="badge b-off">${h(H_ACTION[x.action] || x.action)}</span>${k === 0 ? '<span class="badge b-tv">version actuelle</span>' : ''}</header>
+      ${ch.length ? `<span class="chg">Modifié : ${h(ch.join(', '))}${st}</span>` : ''}
+      ${k > 0 && x.apres && !readOnly ? `<div><button type="button" class="btn sm alt" data-restore="${k}">Revenir à cette version</button></div>` : ''}</li>`;
+  }).join('')}</ul>`;
+  $$('[data-restore]', box).forEach(b => b.onclick = () => {
+    const x = list[+b.dataset.restore];
+    confirmBox(`Revenir à la version du ${h(fmtDT(x.date))} (${h(x.par)}) ? La version actuelle reste dans l’historique.`, 'Revenir à cette version', async () => {
+      const o = Object.assign({}, x.apres);
+      if (isContrib() && !['Brouillon', 'À traiter'].includes(stOf(o.statut))) o.statut = 'À traiter';
+      if ((await save(kind, o, { force: true })).ok) { toast('Version restaurée.'); after(); }
+    });
+  });
+}
+function confirmBox(text, label, fn) {
+  const m = modal(`<h2>Confirmer</h2><p style="margin:12px 0 20px">${text}</p><div class="foot" style="justify-content:flex-end"><div><button class="btn alt" type="button" id="cb-no">Annuler</button><button class="btn dgr" type="button" id="cb-ok">${h(label)}</button></div></div>`, true);
+  $('#cb-no').onclick = m.close; $('#cb-ok').onclick = () => { m.close(); fn(); };
+}
+
+/* Envoi d'un fichier (photo réduite à 1600 px côté navigateur) */
+async function uploadFile(file, kind) {
+  try {
+    setSync('wait', 'Envoi de « ' + file.name + ' »…');
+    let data, mime = file.type, name = file.name;
+    if (kind === 'image' && !/gif|svg/.test(file.type)) { const r = await resizeImage(file, 1600); data = r.data; mime = 'image/jpeg'; name = name.replace(/\.\w+$/, '') + '.jpg'; }
+    else data = await new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(String(fr.result).split(',')[1]); fr.onerror = rej; fr.readAsDataURL(file); });
+    const r = await API.upload({ name, mime, data, kind });
+    setSync('ok', 'Fichier envoyé' + (LIVE ? ' dans Drive' : ''));
+    return r;
+  } catch (e) { setSync('bad', 'Envoi impossible'); toast('Envoi impossible : ' + (e.message || e), true); return null; }
+}
+function resizeImage(file, max) {
+  return new Promise((res, rej) => {
+    const img = new Image(), url = URL.createObjectURL(file);
+    img.onload = () => { const s = Math.min(1, max / Math.max(img.width, img.height)); const c = document.createElement('canvas'); c.width = Math.round(img.width * s); c.height = Math.round(img.height * s); c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url); res({ data: c.toDataURL('image/jpeg', .85).split(',')[1] }); };
+    img.onerror = () => rej(new Error('Image illisible')); img.src = url;
+  });
+}
+
+/* =====================================================================
+   Calendrier (glisser-déposer)
+   ===================================================================== */
+function vCalendar() {
+  const [y, mo] = S.calMonth.split('-').map(Number);
+  const first = new Date(y, mo - 1, 1), start = mondayOf(isoDay(first));
+  const last = new Date(y, mo, 0), end = addDays(mondayOf(isoDay(last)), 6);
+  const weeks = []; for (let d = start; d <= end; d = addDays(d, 7)) weeks.push(d);
+  const t = today();
+  const its = S.db.items.filter(i => !yes(i.archive));
+  const unplaced = its.filter(i => !i.date_publication && !['Publié'].includes(stOf(i.statut)));
+  const tfOn = d => S.db.tempsForts.filter(x => x.date_debut && x.date_debut <= d && (x.date_fin || x.date_debut) >= d);
+  const flOn = d => S.db.flashes.filter(f => f.debut && f.debut.slice(0, 10) === d && norm(f.statut) !== 'archive');
+  const eds = S.db.editions;
+  $('#app').innerHTML = `<div class="wrap" style="max-width:1600px">
+    <div class="head"><div><p class="kicker">Programmation</p><h1>${MOIS[mo - 1]} ${y}</h1></div>
+      <div class="tools"><button class="btn alt sm" id="m-prev">◀</button><button class="btn alt sm" id="m-today">Aujourd’hui</button><button class="btn alt sm" id="m-next">▶</button><button class="btn sm alt ed-only" id="tf-new">+ Temps fort</button><button class="btn sm" data-new="1">+ Contenu</button></div></div>
+    <div class="cal-layout"><div class="cal">
+      <div class="cal-h">Sem.</div>${['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].map(d => `<div class="cal-h">${d}</div>`).join('')}
+      ${weeks.map(w => {
+        const days = Array.from({ length: 7 }, (_, k) => addDays(w, k));
+        const wtf = S.db.tempsForts.find(x => x.date_debut && x.date_debut <= days[6] && (x.date_fin || x.date_debut) >= w);
+        const ed = eds.find(e => e.date_debut && e.date_debut <= days[6] && (e.date_fin || e.date_debut) >= w);
+        return `<div class="cal-w ${wtf ? 'tf' : ''}" style="${wtf ? '--tf:' + (TF_COL[wtf.couleur] || '#D20014') : ''}"><b>S${weekNum(w)}</b>${wtf ? '<span title="Temps fort">★</span>' : ''}${ed ? `<button class="chip" data-ed="${h(ed.id)}" title="${h(ed.titre)}" style="border:0">Édition</button>` : ''}</div>` +
+          days.map(d => `<div class="cal-day ${d.slice(0, 7) !== S.calMonth ? 'out' : ''} ${d === t ? 'today' : ''}" data-day="${d}">
+            <div class="dn"><span>${+d.slice(8)}</span><button class="plus" data-new="1" data-date="${d}" aria-label="Ajouter le ${d}">+</button></div>
+            ${tfOn(d).map(x => `<button class="ctf" data-tf="${h(x.id)}" style="background:${TF_COL[x.couleur] || '#D20014'};color:${['Jaune', 'Lavande'].includes(x.couleur) ? '#0E0E0E' : '#fff'}" title="${h(x.titre)}">${h(x.titre)}</button>`).join('')}
+            ${flOn(d).map(f => `<span class="cchip fl" data-fl="${h(f.id)}"><i style="background:var(--red)"></i><span>⚡ ${h(f.titre)}</span></span>`).join('')}
+            ${its.filter(i => i.date_publication === d).map(i => `<span class="cchip" draggable="true" data-id="${h(i.id)}" data-open="${h(i.id)}" title="${h(i.titre)} · ${h(stOf(i.statut))}"><i style="background:${h(catOf(i.categorie).couleur)}"></i><span>${h(i.titre)}</span><b class="sdot" style="background:${ST_COL[stOf(i.statut)]};margin:0"></b></span>`).join('')}
+          </div>`).join('');
+      }).join('')}
+    </div>
+    <aside class="side">
+      <div class="box drop" data-day=""><h3>À placer</h3><p class="small muted">Contenus sans date. Glisse-les sur un jour pour les programmer (et ici pour retirer la date).</p>
+        <div class="stack">${unplaced.map(i => `<span class="cchip" draggable="true" data-id="${h(i.id)}" data-open="${h(i.id)}"><i style="background:${h(catOf(i.categorie).couleur)}"></i><span>${h(i.titre)}</span></span>`).join('') || '<span class="small muted">Tout est placé.</span>'}</div></div>
+      <div class="box"><h3>Légende</h3><div class="stack small">${STATUTS.map(s => `<span><i class="sdot" style="background:${ST_COL[s]}"></i>${s}</span>`).join('')}<span>★ semaine avec un temps fort</span><span>⚡ flash programmé</span></div></div>
+    </aside></div></div>`;
+  bindCommon();
+  $('#m-prev').onclick = () => { const d = new Date(y, mo - 2, 1); S.calMonth = isoDay(d).slice(0, 7); vCalendar(); };
+  $('#m-next').onclick = () => { const d = new Date(y, mo, 1); S.calMonth = isoDay(d).slice(0, 7); vCalendar(); };
+  $('#m-today').onclick = () => { S.calMonth = today().slice(0, 7); vCalendar(); };
+  $('#tf-new').onclick = () => openTf();
+  $$('[data-tf]').forEach(b => b.onclick = () => openTf(b.dataset.tf));
+  $$('[data-fl]').forEach(b => b.onclick = () => { go('flash'); setTimeout(() => openFlashForm(b.dataset.fl), 0); });
+  $$('[data-ed]').forEach(b => b.onclick = () => { S.edOpen = b.dataset.ed; go('editions'); });
+  dnd($$('.cchip[draggable]'), $$('[data-day]'), async (id, z) => {
+    const it = itemById(id); if (!it) return; const d = z.dataset.day;
+    if ((it.date_publication || '') === d) return;
+    const o = Object.assign({}, it);
+    if (d && it.date_publication && it.date_expiration) o.date_expiration = addDays(it.date_expiration, diffDays(it.date_publication, d));
+    o.date_publication = d;
+    if (d) o.semaine = d.slice(0, 4) + '-S' + pad(weekNum(d));
+    const r = await save('items', o, { expected: it.modifie_le });
+    if (r.ok) { vCalendar(); toast(d ? '« ' + it.titre + ' » programmé le ' + fmtD(d) + (o.date_expiration !== it.date_expiration ? ' (expiration décalée au ' + fmtD(o.date_expiration) + ')' : '') : 'Date retirée.'); }
+    else if (r.conflict) toast('Modifié entre-temps par ' + (r.current.modifie_par || 'un·e collègue') + ' : actualise.', true);
+  });
+}
+
+/* =====================================================================
+   Temps forts
+   ===================================================================== */
+function vTf() {
+  const t = today();
+  const list = S.db.tempsForts.slice().sort((a, b) => String(a.date_debut).localeCompare(String(b.date_debut)));
+  const up = list.filter(x => (x.date_fin || x.date_debut) >= t), past = list.filter(x => (x.date_fin || x.date_debut) < t);
+  const row = x => `<li data-tf="${h(x.id)}" style="display:grid;grid-template-columns:14px 150px minmax(0,1fr) auto;gap:14px;align-items:center;padding:12px;border-top:1px solid var(--line);cursor:pointer">
+    <i style="width:14px;height:14px;border-radius:4px;background:${TF_COL[x.couleur] || '#D20014'}"></i><b class="disp">${fmtD(x.date_debut)}${x.date_fin && x.date_fin !== x.date_debut ? ' → ' + fmtD(x.date_fin) : ''}</b>
+    <span>${h(x.titre)}${x.note ? `<br><span class="small muted">${h(x.note)}</span>` : ''}</span>
+    <span>${yes(x.afficher_tv) ? '<span class="badge b-tv">Affiché sur la TV</span>' : '<span class="badge b-off">Interne</span>'}</span></li>`;
+  $('#app').innerHTML = `<div class="wrap">
+    <div class="head"><div><p class="kicker">Calendrier</p><h1>Temps forts</h1></div><div class="tools"><button class="btn ed-only" id="tf-new">+ Temps fort</button></div></div>
+    <p class="muted" style="max-width:70ch;margin-bottom:16px">Jurys, partiels, événements : des repères pour l’équipe. Ceux marqués « Afficher sur l’écran TV » apparaissent dans l’écran « Temps forts » (3 prochaines semaines) et à côté de l’horoscope. Les notes ne sont jamais affichées.</p>
+    <section class="panel"><h2 class="disp" style="font-size:20px">À venir</h2><ul style="list-style:none;padding:0;margin:8px 0 0">${up.map(row).join('') || '<li class="muted">Aucun.</li>'}</ul></section>
+    ${past.length ? `<details style="margin-top:18px"><summary class="muted">Passés (${past.length})</summary><ul style="list-style:none;padding:0;margin:8px 0 0">${past.reverse().map(row).join('')}</ul></details>` : ''}
+  </div>`;
+  $('#tf-new').onclick = () => openTf();
+  $$('[data-tf]').forEach(b => b.onclick = () => openTf(b.dataset.tf));
+}
+function openTf(id) {
+  const base = id ? S.db.tempsForts.find(x => x.id === id) : null;
+  const v = Object.assign({ id: uid('t'), couleur: 'Rouge', afficher_tv: 'NON' }, base || {});
+  const m = modal(`<p class="kicker">Temps fort</p><h2>${base ? h(base.titre) : 'Nouveau temps fort'}</h2>
+    <form id="tform" style="display:grid;gap:12px;margin-top:16px">
+      <div class="field"><label for="t-t">Titre *</label><input id="t-t" class="inp" required value="${h(v.titre)}"></div>
+      <div class="grid2"><div class="field"><label for="t-a">Début *</label><input type="date" id="t-a" class="inp" required value="${h(v.date_debut)}"></div><div class="field"><label for="t-b">Fin</label><input type="date" id="t-b" class="inp" value="${h(v.date_fin)}"></div></div>
+      <div class="field"><span class="lab">Couleur</span>${radios('t-c', Object.keys(TF_COL).map(k => [k, k]), v.couleur)}</div>
+      <div class="field"><span class="lab">Afficher sur l’écran TV</span>${radios('t-tv', [['OUI', 'Oui'], ['NON', 'Non (interne)']], yes(v.afficher_tv) ? 'OUI' : 'NON')}</div>
+      <div class="field"><label for="t-n">Note interne</label><textarea id="t-n" class="inp" rows="3">${h(v.note)}</textarea></div>
+      <div class="foot"><div><button class="btn" type="submit">Enregistrer</button></div>${base ? '<div><button class="btn dgr" type="button" id="t-del">Supprimer</button></div>' : ''}</div>
+    </form>`, true);
+  $('#tform').onsubmit = async e => {
+    e.preventDefault();
+    const o = Object.assign({}, v, { titre: $('#t-t').value.trim(), date_debut: $('#t-a').value, date_fin: $('#t-b').value, couleur: $('[name=t-c]:checked').value, afficher_tv: $('[name=t-tv]:checked').value, note: $('#t-n').value });
+    if (o.date_fin && o.date_fin < o.date_debut) return toast('La fin est avant le début.', true);
+    if ((await save('tempsForts', o, { expected: base && base.modifie_le })).ok) { m.close(); render(); toast('Temps fort enregistré.'); }
+  };
+  if (base) $('#t-del').onclick = () => confirmBox('Supprimer ce temps fort ?', 'Supprimer', async () => { if (await removeRow('tempsForts', v.id)) { m.close(); render(); } });
+}
+
+/* =====================================================================
+   Éditions
+   ===================================================================== */
+function vEditions() {
+  if (S.edOpen) return vEdition(S.edOpen);
+  const list = S.db.editions.slice().sort((a, b) => String(b.date_debut).localeCompare(String(a.date_debut)));
+  $('#app').innerHTML = `<div class="wrap">
+    <div class="head"><div><p class="kicker">Sélections hebdomadaires</p><h1>Éditions</h1></div><div class="tools"><button class="btn" id="ed-new">+ Édition</button></div></div>
+    <p class="muted" style="max-width:72ch;margin-bottom:16px">Une édition fixe l’ordre de passage des contenus sur l’écran pendant sa semaine (et compose le Magazine). Sans édition en cours, l’écran classe les contenus par priorité.</p>
+    ${list.length ? `<div class="eds">${list.map(e => `<article class="ed" data-ed="${h(e.id)}"><div style="display:flex;justify-content:space-between;gap:8px"><span class="kicker">Semaine ${h(e.numero_semaine)}</span><span class="chip">${h(e.statut || 'Brouillon')}</span></div>
+      <h3 class="disp" style="font-size:22px">${h(e.titre)}</h3><span class="small muted">${fmtD(e.date_debut)} → ${fmtD(e.date_fin)} · ${String(e.contenus_ordonnes || '').split(';').filter(Boolean).length} contenus</span></article>`).join('')}</div>` : '<div class="empty"><p>Aucune édition.</p></div>'}
+  </div>`;
+  $('#ed-new').onclick = async () => {
+    const mon = mondayOf(today()), n = weekNum(mon);
+    const e = { id: uid('e'), titre: 'Édition de la semaine ' + n, numero_semaine: String(n), date_debut: mon, date_fin: addDays(mon, 6), statut: 'Brouillon', contenus_ordonnes: '', cree_le: isoMin(new Date()), texte_editorial: '', contenu_une_id: '' };
+    if ((await save('editions', e)).ok) { S.edOpen = e.id; vEditions(); }
+  };
+  $$('[data-ed]').forEach(b => b.onclick = () => { S.edOpen = b.dataset.ed; vEditions(); });
+}
+function vEdition(id) {
+  const e = S.db.editions.find(x => x.id === id); if (!e) { S.edOpen = null; return vEditions(); }
+  let ids = String(e.contenus_ordonnes || '').split(';').map(s => s.trim()).filter(Boolean);
+  const draw = () => {
+    $('#ed-items').innerHTML = ids.map((cid, k) => { const it = itemById(cid); if (!it) return ''; return `<li draggable="true" data-id="${h(cid)}"><span class="muted">⋮⋮</span>${thumb(it, 160)}<div><b class="disp">${k + 1}. ${h(it.titre)}</b>${e.contenu_une_id === cid ? ' <span class="badge b-urg">À la une</span>' : ''}<div class="small muted">${h(stOf(it.statut))} · ${h(it.support || 'NEWS + TV')}</div></div><div style="display:flex;gap:4px"><button class="btn sm alt" data-une="${h(cid)}" title="À la une">★</button><button class="btn sm alt" data-out="${h(cid)}" aria-label="Retirer">✕</button></div></li>`; }).join('') || '<li class="muted" style="display:block;cursor:default">Ajoute des contenus à cette édition.</li>';
+    dnd($$('#ed-items li[draggable]'), $$('#ed-items li[draggable]'), (dragId, z) => { const from = ids.indexOf(dragId), to = ids.indexOf(z.dataset.id); if (from < 0 || to < 0 || from === to) return; ids.splice(to, 0, ids.splice(from, 1)[0]); draw(); });
+    $$('[data-out]').forEach(b => b.onclick = () => { ids = ids.filter(x => x !== b.dataset.out); draw(); });
+    $$('[data-une]').forEach(b => b.onclick = () => { e.contenu_une_id = b.dataset.une; draw(); });
+    const avail = S.db.items.filter(i => !yes(i.archive) && !ids.includes(i.id)).sort((a, b) => String(b.date_publication || '').localeCompare(String(a.date_publication || '')));
+    $('#ed-add').innerHTML = '<option value="">+ Ajouter un contenu…</option>' + avail.map(i => `<option value="${h(i.id)}">${h(i.titre)} (${h(stOf(i.statut))})</option>`).join('');
+  };
+  $('#app').innerHTML = `<div class="wrap">
+    <div class="head"><div><button class="linkbtn" id="ed-back">← Éditions</button><h1 style="margin-top:8px">${h(e.titre)}</h1></div>
+      <div class="tools"><button class="btn alt" id="ed-prev">Aperçu TV</button><button class="btn" id="ed-save">Enregistrer</button></div></div>
+    <div style="display:grid;grid-template-columns:minmax(0,380px) minmax(0,1fr);gap:24px;align-items:start" class="edgrid">
+      <section class="panel" style="display:grid;gap:12px">
+        <div class="field"><label for="e-t">Titre</label><input id="e-t" class="inp" value="${h(e.titre)}"></div>
+        <div class="grid2"><div class="field"><label for="e-a">Début</label><input type="date" id="e-a" class="inp" value="${h(e.date_debut)}"></div><div class="field"><label for="e-b">Fin</label><input type="date" id="e-b" class="inp" value="${h(e.date_fin)}"></div></div>
+        <div class="field"><label for="e-s">Statut</label><select id="e-s" class="inp">${opt(ED_ST, e.statut || 'Brouillon')}</select><span class="hint">L’ordre s’applique à l’écran quand l’édition est « Programmée » ou « Publiée » et couvre la date du jour.</span></div>
+        <div class="field"><label for="e-x">Texte éditorial (Magazine)</label><textarea id="e-x" class="inp" rows="4">${h(e.texte_editorial)}</textarea></div>
+        <button class="btn dgr sm" id="ed-del" style="justify-self:start">Supprimer l’édition</button>
+      </section>
+      <section><div class="toolbar"><select class="inp" id="ed-add" style="flex:1"></select></div><ul class="ed-items" id="ed-items"></ul><p class="small muted" style="margin-top:8px">Glisse les lignes pour changer l’ordre de passage.</p></section>
+    </div></div>`;
+  draw();
+  $('#ed-add').onchange = ev => { if (ev.target.value) { ids.push(ev.target.value); draw(); } };
+  $('#ed-back').onclick = () => { S.edOpen = null; vEditions(); };
+  const collect = () => Object.assign({}, e, { titre: $('#e-t').value.trim(), date_debut: $('#e-a').value, date_fin: $('#e-b').value, numero_semaine: $('#e-a').value ? String(weekNum($('#e-a').value)) : e.numero_semaine, statut: $('#e-s').value, texte_editorial: $('#e-x').value, contenus_ordonnes: ids.join(';'), publie_le: ['Publiée'].includes($('#e-s').value) && !e.publie_le ? isoMin(new Date()) : e.publie_le || '' });
+  $('#ed-save').onclick = async () => { const o = collect(); const r = await save('editions', o, { expected: e.modifie_le }); if (r.ok) { toast('Édition enregistrée.'); vEdition(id); } else if (r.conflict) toast('Édition modifiée entre-temps par ' + (r.current.modifie_par || 'un·e collègue') + ' : actualise.', true); };
+  $('#ed-prev').onclick = () => { const o = collect(); const db = Object.assign({}, S.db, { editions: S.db.editions.map(x => x.id === o.id ? Object.assign({}, o, { statut: 'Publiée', date_debut: '', date_fin: '' }) : x) }); previewModal(null, { db, onlyIds: ids, sim: o.date_debut }); };
+  $('#ed-del').onclick = () => confirmBox('Supprimer cette édition ? Les contenus ne sont pas supprimés.', 'Supprimer', async () => { if (await removeRow('editions', e.id)) { S.edOpen = null; vEditions(); } });
+}
+
+/* =====================================================================
+   Flash Info
+   ===================================================================== */
+function vFlash() {
+  const n = isoMin(new Date()) + ':00';
+  const fl = S.db.flashes.slice().sort((a, b) => String(b.debut || b.cree_le).localeCompare(String(a.debut || a.cree_le)));
+  const groups = [
+    ['En cours', fl.filter(flashActive)],
+    ['Programmés', fl.filter(f => norm(f.statut) === 'programme' && f.debut > n)],
+    ['Brouillons', fl.filter(f => norm(f.statut) === 'brouillon')],
+    ['Terminés', fl.filter(f => norm(f.statut) === 'archive' || (norm(f.statut) === 'programme' && f.fin && f.fin <= n))]
+  ];
+  const lv = f => norm(f.niveau) === 'urgent' ? 'urg' : norm(f.niveau) === 'important' ? 'imp' : 'info';
+  $('#app').innerHTML = `<div class="wrap">
+    <div class="head"><div><p class="kicker">Prioritaire sur l’écran</p><h1>Flash Info</h1></div><div class="tools"><button class="btn red" id="fl-new">+ Nouveau flash</button></div></div>
+    <div class="fl-grid">
+      <section class="panel y"><h2 class="disp" style="font-size:22px">Comment ça marche</h2>
+        <ul style="margin:10px 0 0;padding-left:18px;display:grid;gap:6px"><li>Un flash interrompt la boucle de l’écran pendant la durée choisie, puis revient régulièrement tant qu’il est actif : <b>Urgent</b> entre chaque écran, <b>Important</b> tous les 3 écrans, <b>Info</b> tous les 5.</li><li>Si plusieurs flashs sont actifs, le plus urgent passe en premier.</li><li>L’écran relit les flashs <b>toutes les 30 secondes</b> : compte jusqu’à une minute après l’enregistrement.</li><li>« Arrêter » le retire immédiatement (il est archivé et peut être rediffusé).</li></ul></section>
+      <section>${groups.map(([t, l]) => l.length ? `<h2 class="disp" style="font-size:20px;margin:0 0 10px">${t}</h2><ul class="fl-list" style="margin-bottom:22px">${l.map(f => `
+        <li class="${flashActive(f) ? 'on' : 'lvl-' + lv(f)}"><span class="small">${h(f.niveau || 'Info')} · ${h(f.duree_secondes || 30)} s · ${f.debut ? 'dès ' + h(fmtDT(f.debut)) : 'sans date'}${f.fin ? ' → ' + h(fmtDT(f.fin)) : ''}</span><b>${h(f.titre)}</b><span>${h(f.message)}</span>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px">${flashActive(f) || (norm(f.statut) === 'programme' && f.debut > n) ? `<button class="btn sm alt" data-stop="${h(f.id)}">Arrêter</button>` : `<button class="btn sm alt" data-go-fl="${h(f.id)}">Diffuser maintenant</button>`}<button class="btn sm alt" data-edit="${h(f.id)}">Modifier</button><button class="btn sm alt" data-pv="${h(f.id)}">Aperçu</button></div></li>`).join('')}</ul>` : '').join('') || '<div class="empty"><p>Aucun flash pour l’instant.</p></div>'}</section>
+    </div></div>`;
+  $('#fl-new').onclick = () => openFlashForm();
+  $$('[data-edit]').forEach(b => b.onclick = () => openFlashForm(b.dataset.edit));
+  $$('[data-stop]').forEach(b => b.onclick = async () => { const f = S.db.flashes.find(x => x.id === b.dataset.stop); if ((await save('flashes', Object.assign({}, f, { statut: 'Archivé' }))).ok) { vFlash(); renderNav(); toast('Flash arrêté.'); } });
+  $$('[data-go-fl]').forEach(b => b.onclick = async () => { const f = S.db.flashes.find(x => x.id === b.dataset.goFl); const now = new Date(); const o = Object.assign({}, f, { statut: 'Programmé', debut: isoMin(now) + ':00', fin: isoMin(new Date(now.getTime() + 2 * 3600e3)) + ':00' }); if ((await save('flashes', o)).ok) { vFlash(); renderNav(); } });
+  $$('[data-pv]').forEach(b => b.onclick = () => { const f = S.db.flashes.find(x => x.id === b.dataset.pv); previewModal(null, { flashOnly: Object.assign({}, f, { statut: 'Programmé', debut: '', fin: '' }) }); });
+}
+function openFlashForm(id) {
+  const base = id ? S.db.flashes.find(x => x.id === id) : null;
+  const now = new Date();
+  const v = Object.assign({ id: uid('f'), niveau: 'Important', duree_secondes: '30', statut: 'Programmé', cree_le: isoMin(now) }, base || {});
+  const mode = !base ? 'now' : norm(v.statut) === 'brouillon' ? 'draft' : 'sched';
+  const m = modal(`<p class="kicker">Flash Info</p><h2>${base ? 'Modifier le flash' : 'Nouveau flash'}</h2>
+    <form id="fform" style="display:grid;gap:12px;margin-top:16px">
+      <div class="field"><label for="f-t">Titre * <span class="hint">(lisible de loin)</span></label><input id="f-t" class="inp" maxlength="40" required value="${h(v.titre)}"><span class="count" data-c="f-t" data-max="40"></span></div>
+      <div class="field"><label for="f-m">Message</label><textarea id="f-m" class="inp" maxlength="160" rows="3">${h(v.message)}</textarea><span class="count" data-c="f-m" data-max="160"></span></div>
+      <div class="field"><span class="lab">Niveau d’urgence</span>${radios('f-l', FL_LVL.map(x => [x, x]), FL_LVL.find(x => norm(x) === norm(v.niveau)) || 'Info')}</div>
+      <div class="field"><label for="f-d">Durée d’affichage à chaque passage</label><select id="f-d" class="inp">${[15, 30, 45, 60, 120].map(s => `<option value="${s}" ${String(s) === String(v.duree_secondes) ? 'selected' : ''}>${s} secondes</option>`).join('')}</select></div>
+      <div class="field"><span class="lab">Départ</span>${radios('f-mode', [['now', 'Immédiat'], ['sched', 'Programmé'], ['draft', 'Brouillon']], mode)}</div>
+      <div class="grid2" id="f-when"><div class="field"><label for="f-a">Début</label><input type="datetime-local" id="f-a" class="inp" value="${h(String(v.debut || isoMin(now)).slice(0, 16))}"></div>
+        <div class="field"><label for="f-b">Fin</label><input type="datetime-local" id="f-b" class="inp" value="${h(String(v.fin || isoMin(new Date(now.getTime() + 2 * 3600e3))).slice(0, 16))}"><span class="hint">Vide = jusqu’à « Arrêter ».</span></div></div>
+      <div class="foot"><div><button class="btn red" type="submit">Enregistrer et diffuser</button><button class="btn alt" type="button" id="f-pv">Aperçu</button></div>${base ? '<div><button class="btn dgr" type="button" id="f-del">Supprimer</button></div>' : ''}</div>
+    </form>`, true);
+  const counts = () => $$('#fform .count').forEach(c => { const n = $('#' + c.dataset.c).value.length; c.textContent = n + ' / ' + c.dataset.max; });
+  $$('#f-t,#f-m').forEach(x => x.addEventListener('input', counts)); counts();
+  const sync = () => { const md = $('[name=f-mode]:checked').value; $('#f-a').disabled = md === 'now'; $('#fform [type=submit]').textContent = md === 'draft' ? 'Enregistrer le brouillon' : md === 'now' ? 'Diffuser maintenant' : 'Programmer'; };
+  $$('[name=f-mode]').forEach(r => r.onchange = sync); sync();
+  const collect = () => {
+    const md = $('[name=f-mode]:checked').value;
+    const start = md === 'now' ? isoMin(new Date()) + ':00' : ($('#f-a').value ? $('#f-a').value + ':00' : '');
+    return Object.assign({}, v, { titre: $('#f-t').value.trim(), message: $('#f-m').value.trim(), niveau: $('[name=f-l]:checked').value, duree_secondes: $('#f-d').value, statut: md === 'draft' ? 'Brouillon' : 'Programmé', debut: start, fin: $('#f-b').value ? $('#f-b').value + ':00' : '' });
+  };
+  $('#fform').onsubmit = async e => {
+    e.preventDefault(); const o = collect();
+    if (o.fin && o.debut && o.fin <= o.debut) return toast('La fin doit être après le début.', true);
+    if ((await save('flashes', o, { expected: base && base.modifie_le })).ok) { m.close(); render(); if (!LIVE && o.statut !== 'Brouillon') toast('Flash enregistré. En mode démo, publie flash.json depuis « Diffusion TV ».'); }
+  };
+  $('#f-pv').onclick = () => previewModal(null, { flashOnly: Object.assign(collect(), { statut: 'Programmé', debut: '', fin: '' }) });
+  if (base) $('#f-del').onclick = () => confirmBox('Supprimer ce flash ?', 'Supprimer', async () => { if (await removeRow('flashes', v.id)) { m.close(); render(); } });
+}
+
+/* =====================================================================
+   Diffusion : aperçu de l'écran, publication GitHub, réglages
+   ===================================================================== */
+const tvUrl = () => S.settings.tvUrl || '../tv/index.html';
+const previewMedia = (id, kind) => kind === 'video' ? (LIVE ? '' : mediaSrc(id)) : mediaSrc(id, 1920);
+function previewPayload(o) {
+  o = o || {};
+  const simDate = o.sim || S.prevDate || '';
+  const now = simDate ? new Date(simDate + 'T' + pad(new Date().getHours()) + ':' + pad(new Date().getMinutes())) : new Date();
+  const pub = buildPublic(o.db || S.db, { now, mediaUrl: previewMedia, anyStatus: o.anyStatus, onlyIds: o.onlyIds });
+  if (o.flashOnly) pub.flash.flashes = buildPublic({ flashes: [o.flashOnly] }, { now }).flash.flashes;
+  return { type: 'esp-tv-preview', content: pub.content, flash: pub.flash, date: simDate, goto: o.flashOnly ? 'flash' : '' };
+}
+function mountTv(container, payloadFn, scaled) {
+  const url = tvUrl();
+  if (!url) { container.innerHTML = `<div class="empty" style="position:absolute;inset:12px"><p>Indique l’adresse de l’écran TV publiée sur GitHub Pages dans les réglages (Diffusion TV) pour voir l’aperçu.</p></div>`; return null; }
+  const f = document.createElement('iframe');
+  f.src = url + (url.includes('?') ? '&' : '?') + 'preview=1';
+  f.title = 'Aperçu de l’écran TV'; f.setAttribute('allow', 'autoplay');
+  container.innerHTML = ''; container.appendChild(f);
+  if (scaled) { const fit = () => { f.style.transform = 'scale(' + (container.clientWidth / 1920) + ')'; }; fit(); new ResizeObserver(fit).observe(container); }
+  const send = () => { try { f.contentWindow.postMessage(payloadFn(), '*'); } catch (_) {} };
+  const onMsg = e => { if (e.source === f.contentWindow && e.data && e.data.type === 'esp-tv-ready') send(); };
+  addEventListener('message', onMsg);
+  return { send, frame: f };
+}
+function mountMini(el) { if (el) mountTv(el, () => previewPayload(), true); }
+function previewModal(item, o) {
+  o = o || {};
+  const m = modal(`<p class="kicker">Aperçu de l’écran TV</p><h2>${item ? h(item.titre || 'Contenu') : o.flashOnly ? 'Flash Info' : 'Édition'}</h2><div class="tvframe" id="pv" style="margin-top:16px"></div><p class="small muted" style="margin-top:10px">Aperçu non publié. Les flèches ← → du clavier (clic dans l’aperçu d’abord) font défiler les écrans.</p>`);
+  m.el.style.width = 'min(1200px,100%)';
+  const db = o.db || (item ? Object.assign({}, S.db, { items: S.db.items.filter(x => x.id !== item.id).concat([item]) }) : S.db);
+  mountTv($('#pv', m.el), () => previewPayload({ db, onlyIds: item ? [item.id] : o.onlyIds, anyStatus: true, sim: o.sim, flashOnly: o.flashOnly }));
+}
+function vDiffusion() {
+  const lp = S.settings.lastPublish;
+  const t = today();
+  const pub = buildPublic(S.db, { mediaUrl: previewMedia });
+  const live = pub.content.items.filter(i => (!i.pub || i.pub <= t)).length, later = pub.content.items.length - live;
+  $('#app').innerHTML = `<div class="wrap" style="max-width:1600px">
+    <div class="head"><div><p class="kicker">Écran du coworking</p><h1>Diffusion TV</h1></div>
+      <div class="tools"><label class="small muted">Simuler la date <input type="date" class="inp" id="pv-date" style="width:auto" value="${h(S.prevDate)}"></label><button class="btn alt" id="pv-reload">Actualiser l’aperçu</button><button class="btn ed-only" id="pv-pub">Publier sur l’écran</button></div></div>
+    <div class="diff">
+      <div><div class="tvframe" id="pv"></div><p class="small muted" style="margin-top:8px">Aperçu de ce qui sera publié : contenus « Programmé » et « Publié », support TV, non archivés, non expirés. ${live} à l’écran ${S.prevDate ? 'à cette date' : 'aujourd’hui'}${later ? `, ${later} programmé${later > 1 ? 's' : ''} plus tard` : ''}.</p></div>
+      <aside style="display:grid;gap:16px">
+        <section class="panel"><h2 class="disp" style="font-size:20px">Publication</h2>
+          <dl class="kv" style="margin-top:10px"><dt>Dernière</dt><dd>${lp ? h(fmtDT(lp.at)) + (lp.by ? ' · ' + h(lp.by) : '') + (lp.ok ? ' ✓' : ' ✕') : '—'}</dd>${lp && lp.note ? `<dt>Note</dt><dd>${h(lp.note)}</dd>` : ''}${lp && lp.error ? `<dt>Erreur</dt><dd style="color:var(--red)">${h(lp.error)}</dd>` : ''}
+          <dt>Auto</dt><dd>${LIVE ? (S.settings.autoPublish ? 'Toutes les 10 min si quelque chose a changé' : 'Désactivée') : 'Mode démo'}</dd></dl>
+          <div id="pub-log"></div>
+          <p class="small muted" style="margin-top:10px">${LIVE ? 'La publication envoie content.json, flash.json et les nouveaux médias sur GitHub. L’écran les récupère sous 5 minutes (flashs : 30 s).' : 'Mode démo : « Publier » télécharge content.json et flash.json, à déposer dans le dossier data/ du dépôt.'}</p></section>
+        ${S.settings.canAdmin ? `<section class="panel"><h2 class="disp" style="font-size:20px">Réglages</h2><form id="set" style="display:grid;gap:10px;margin-top:10px">
+          <div class="field"><label for="s-tv">Adresse de l’écran TV</label><input class="inp" id="s-tv" value="${h(S.settings.tvUrl || '')}" placeholder="https://maxime-esdlyon.github.io/esp-actu-lyon/tv/"></div>
+          ${LIVE ? `<div class="field"><label for="s-repo">Dépôt GitHub</label><input class="inp" id="s-repo" value="${h(S.settings.repo || '')}" placeholder="maxime-esdlyon/esp-actu-lyon"></div>
+          <div class="field"><label for="s-br">Branche</label><input class="inp" id="s-br" value="${h(S.settings.branch || 'main')}"></div>
+          <div class="field"><label for="s-tok">Jeton GitHub ${S.settings.tokenSet ? '<span class="badge b-tv">enregistré</span>' : ''}</label><input class="inp" id="s-tok" type="password" placeholder="${S.settings.tokenSet ? 'Laisser vide pour conserver' : 'Jeton à accès « Contents : write »'}" autocomplete="off"><span class="hint">Saisi par l’administrateur·rice, stocké dans les propriétés du script, jamais renvoyé au navigateur.</span></div>
+          <label class="small"><input type="checkbox" id="s-auto" ${S.settings.autoPublish ? 'checked' : ''}> Publication automatique (toutes les 10 min)</label>` : ''}
+          <div><button class="btn sm" type="submit">Enregistrer les réglages</button></div>
+        </form></section>
+        <section class="panel"><h2 class="disp" style="font-size:20px">Accès à l’outil</h2>
+          <p class="small muted" style="margin-top:6px">Comptes Google autorisés. <b>Contributeur·rice</b> : propose des contenus et commente. <b>Éditeur·rice</b> : tout le contenu, les flashs et la publication. <b>Admin</b> : en plus, réglages et accès.</p>
+          <div class="acc" id="acc"></div>
+          <form id="acc-add" class="acc" style="margin-top:12px"><input class="inp" id="acc-mail" type="email" placeholder="prenom.nom@espub.org" required><div style="display:flex;gap:8px"><select class="inp" id="acc-role" style="width:auto">${ACC_OPTS('contributeur')}</select><button class="btn sm" type="submit">Donner l’accès</button></div></form>
+          <p class="hint small" style="margin-top:8px">La personne reçoit aussi l’accès en lecture au dossier Drive des médias (pour voir les vignettes).</p></section>` : `<section class="panel"><h2 class="disp" style="font-size:20px">Réglages</h2><p class="small muted" style="margin-top:6px">Les réglages de publication et les accès sont gérés par les admins de l’outil.</p></section>`}
+        ${!LIVE ? `<section class="panel l"><h2 class="disp" style="font-size:20px">Mode démo</h2><p class="small" style="margin-top:6px">Les données sont enregistrées dans ce navigateur uniquement. Ouvre la même page dans un 2e onglet pour simuler le travail à plusieurs.</p><button class="btn sm alt" id="demo-reset" style="margin-top:10px">Réinitialiser la démo</button></section>` : ''}
+      </aside></div></div>`;
+  const tv = mountTv($('#pv'), () => previewPayload(), false);
+  $('#pv-date').onchange = e => { S.prevDate = e.target.value; tv && tv.send(); };
+  $('#pv-reload').onclick = () => tv && tv.send();
+  $('#pv-pub').onclick = () => publish('all');
+  if ($('#set')) $('#set').onsubmit = async e => {
+    e.preventDefault();
+    const s = { tvUrl: $('#s-tv').value.trim() };
+    if (LIVE) Object.assign(s, { repo: $('#s-repo').value.trim(), branch: $('#s-br').value.trim() || 'main', autoPublish: $('#s-auto').checked }, $('#s-tok').value ? { token: $('#s-tok').value.trim() } : {});
+    try { const r = await API.settings(s); S.settings = Object.assign({}, S.settings, r.settings || s); delete S.settings.token; toast('Réglages enregistrés.'); vDiffusion(); }
+    catch (err) { toast('Réglages refusés : ' + (err.message || err), true); }
+  };
+  if ($('#acc')) drawAccess(S.settings.access || []);
+  if ($('#acc-add')) $('#acc-add').onsubmit = async e => {
+    e.preventDefault();
+    const mail = $('#acc-mail').value.trim().toLowerCase();
+    try { drawAccess(await API.access('set', mail, $('#acc-role').value)); $('#acc-mail').value = ''; toast('Accès donné à ' + mail + '. Envoie-lui l’adresse de l’outil.'); }
+    catch (err) { toast('Accès refusé : ' + (err.message || err), true); }
+  };
+  const dr = $('#demo-reset'); if (dr) dr.onclick = () => confirmBox('Effacer les données de démonstration de ce navigateur ?', 'Réinitialiser', () => { localStorage.removeItem(DEMO_KEY); Object.keys(localStorage).filter(k => k.startsWith('espActu.media.')).forEach(k => localStorage.removeItem(k)); loadAll(); });
+}
+const ACC_OPTS = sel => ['contributeur', 'editeur', 'admin'].map(r => `<option value="${r}" ${r === sel ? 'selected' : ''}>${h(ROLE_LABEL[r])}</option>`).join('');
+function drawAccess(list) {
+  S.settings.access = list;
+  const box = $('#acc'); if (!box) return;
+  box.innerHTML = list.length ? list.map(a => `<div class="row"><span>${h(a.email)}${a.owner ? ' <span class="badge b-off">propriétaire</span>' : ''}</span>${a.owner ? '<span class="small muted">Admin</span><span></span>' : `<select class="inp sm" data-acc-role="${h(a.email)}" aria-label="Rôle de ${h(a.email)}" style="width:auto">${ACC_OPTS(a.role)}</select><button type="button" class="linkbtn" data-acc-rm="${h(a.email)}">Retirer</button>`}</div>`).join('') : '<p class="small muted">Aucun accès pour l’instant.</p>';
+  $$('[data-acc-role]', box).forEach(sel => sel.onchange = async () => {
+    try { drawAccess(await API.access('set', sel.dataset.accRole, sel.value)); toast('Rôle mis à jour.'); }
+    catch (err) { toast('Modification refusée : ' + (err.message || err), true); drawAccess(S.settings.access); }
+  });
+  $$('[data-acc-rm]', box).forEach(b => b.onclick = () => confirmBox(`Retirer l’accès de ${h(b.dataset.accRm)} ? Ses contenus et son historique restent dans la base.`, 'Retirer', async () => {
+    try { drawAccess(await API.access('remove', b.dataset.accRm)); toast('Accès retiré.'); }
+    catch (err) { toast('Retrait refusé : ' + (err.message || err), true); }
+  }));
+}
+async function publish(what) {
+  setSync('wait', 'Publication en cours…');
+  try {
+    const r = await API.publish(what);
+    if (r.lastPublish) S.settings.lastPublish = r.lastPublish;
+    renderPubInfo();
+    if (r.ok) { setSync('ok', 'Publié'); toast(r.unchanged ? 'Rien de nouveau : l’écran est déjà à jour.' : 'Publié ! L’écran se met à jour sous 5 minutes.'); }
+    else { setSync('bad', 'Publication échouée'); toast('Publication échouée : ' + (r.error || ''), true); }
+    const lg = $('#pub-log'); if (lg && r.log) lg.innerHTML = `<div class="log">${h(r.log.join('\n'))}</div>`;
+  } catch (e) { setSync('bad', 'Publication échouée'); toast('Publication échouée : ' + (e.message || e), true); }
+}
+
+/* =====================================================================
+   Données de démonstration (reprises de la base éditoriale)
+   ===================================================================== */
+function demoSeed() {
+  const t = today(), mon = mondayOf(t), s = n => addDays(t, n);
+  const it = (o) => Object.assign({ statut: 'À traiter', priorite: 'Normale', support: 'NEWS + TV', archive: 'NON', date_creation: s(-3), filtre_photo: 'OUI', photo_entiere: 'NON', qr_tv: 'NON', modifie_le: isoMin(new Date()) + ':00', modifie_par: 'Démo' }, o);
+  return {
+    rev: 1,
+    categories: [{ id: 'culture', libelle: 'Culture créative', couleur: '#B494DC' }, { id: 'evenements', libelle: 'Événements', couleur: '#D20014' }, { id: 'campus', libelle: 'Campus', couleur: '#F0EB1E' }, { id: 'horoscope', libelle: 'Horoscope', couleur: '#0E0E0E' }],
+    team: [{ nom: 'Marine', role: 'Gestion des contenus' }, { nom: 'Violaine', role: 'Gestion des contenus' }],
+    items: [
+      it({ id: 'c-ex1', titre: 'Digital event : les projets montent sur scène', accroche: 'Jeudi soir, l’espace coworking se transforme en scène : chaque équipe défend son idée devant un jury.', categorie: 'evenements', statut: 'Publié', priorite: 'Haute', format_tv: 'Seule', qr_tv: 'OUI', lien_externe: 'https://www.esp.fr', legende_qr: 'Inscription', date_publication: s(-5), date_expiration: s(3), date_evenement: s(2), responsable: 'Marine' }),
+      it({ id: 'g-ex1', titre: 'Rendus B3 : la galerie des projets', accroche: 'Identités visuelles, affiches et motion design : un aperçu des rendus de la promo B3 Design.', categorie: 'campus', statut: 'Programmé', photo_entiere: 'OUI', filtre_photo: 'NON', galerie: '../media/demo-projet-1.svg|Projet 01 · B3 Design;../media/demo-projet-2.svg|Projet 02 · B3 Design;../media/demo-projet-3.svg|Projet 03 · B3 Design', date_publication: s(-2), date_expiration: s(20), responsable: 'Violaine' }),
+      it({ id: 'p-3', titre: 'Fête des Lumières 2026 : 27 œuvres du 5 au 8 décembre', accroche: 'Quatre soirées de créations lumineuses dans toute la ville, un terrain de jeu pour les yeux créatifs.', categorie: 'evenements', statut: 'À valider', qr_tv: 'OUI', lien_externe: 'https://www.lyon.fr/node/952681', source: 'Ville de Lyon', date_publication: s(1), date_expiration: '2026-12-09', date_evenement: '2026-12-05', mots_cles: 'proposition, Fête des Lumières' }),
+      it({ id: 'p-2', titre: 'Biennale de Lyon : dernières semaines', accroche: 'La 18e Biennale d’art contemporain se termine le 13 décembre.', categorie: 'culture', statut: 'Publié', date_publication: s(-1), date_expiration: '2026-12-14', source: 'macLYON' }),
+      it({ id: 'p-1', titre: 'Sony Future Filmmaker Awards : dépôt jusqu’au 15 décembre', accroche: 'Un concours de films ouvert aux étudiant·es, avec une catégorie dédiée aux cursus cinéma.', categorie: 'culture', statut: 'À traiter', mots_cles: 'proposition, concours', lien_externe: 'https://www.sony.fr', date_expiration: '2026-12-16' }),
+      it({ id: 'c-wifi', titre: 'Nouveau réseau Wi-Fi au 2e étage', accroche: 'Le réseau ESP-Coworking remplace l’ancien à partir de lundi. Identifiants à l’accueil.', categorie: 'campus', statut: 'Publié', date_publication: s(-4), date_expiration: s(10), responsable: 'Violaine' }),
+      it({ id: 'c-ours', titre: 'Compétition Mastère 2 : Ours de la Com', accroche: '7 agences en compétition pour valoriser la santé mentale.', categorie: 'campus', statut: 'En préparation', date_publication: s(4), date_expiration: s(9), responsable: 'Marine' }),
+      it({ id: 'c-brouillon', titre: 'Portes ouvertes de janvier', accroche: '', categorie: 'campus', statut: 'Brouillon' }),
+      it({ id: 'p-4', titre: 'Horoscope de la semaine', accroche: 'Une semaine pour avancer sans stress.', categorie: 'horoscope', statut: 'Publié', date_publication: mon, date_expiration: addDays(mon, 6), description: 'Bélier : une idée fulgurante arrive en pleine pause café.\nTaureau : ton sens du détail fera des merveilles.\nGémeaux : une conversation improvisée te débloque.\nCancer : accorde-toi une vraie soirée tranquille.\nLion : ton enthousiasme entraîne toute l’équipe.\nVierge : range ton bureau numérique.\nBalance : le bon compromis se cache dans la V2.\nScorpion : ose montrer ton brouillon.\nSagittaire : une sortie culturelle t’inspire.\nCapricorne : découpe la grosse tâche en trois.\nVerseau : défends ton idée décalée.\nPoissons : la musique t’aide à trouver le flow.' })
+    ],
+    editions: [], comments: [{ id: 'k-1', contenu_id: 'p-3', auteur: 'Marine', texte: 'Vérifier les horaires sur le site de la Ville avant validation.', date: isoMin(new Date()) }],
+    tempsForts: [
+      { id: 't-1', titre: 'AI Week', date_debut: s(6), date_fin: s(10), couleur: 'Lavande', note: 'ESP M2 MEDIA ; esd M2 DATA', afficher_tv: 'OUI' },
+      { id: 't-2', titre: 'Jury Social Media', date_debut: s(3), date_fin: '', couleur: 'Ocre', note: 'ESP B2 COM', afficher_tv: 'OUI' },
+      { id: 't-3', titre: 'Partiels (B2 COM)', date_debut: s(20), date_fin: s(24), couleur: 'Rouge', note: '', afficher_tv: 'NON' }
+    ],
+    flashes: [], settings: {},
+    access: [{ email: 'prenom.nom@exemple.org', role: 'admin' }, { email: 'contributeur@exemple.org', role: 'contributeur' }]
+  };
+}
+
+/* ---------- Démarrage ---------- */
+(() => { const v = location.hash.slice(1); if (VIEWS.some(x => x[0] === v)) S.view = v; })();
+if (LIVE) Auth.init().then(loadAll).catch(e => { setSync('bad', e.message); $('#app').innerHTML = `<div class="wrap"><div class="empty" style="margin-top:40px"><p><b>${h(e.message)}</b></p><button class="btn" onclick="location.reload()">Réessayer</button></div></div>`; });
+else loadAll();
+</script>
+</body>
+</html>
