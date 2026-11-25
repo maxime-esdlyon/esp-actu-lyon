@@ -1,7 +1,7 @@
 {
  "version": 1,
- "generatedAt": "2026-11-25T09:07:46.090Z",
- "generatedBy": "Test horoscope",
+ "generatedAt": "2026-11-25T09:22:34.375Z",
+ "generatedBy": "Publication automatique",
  "categories": [
   {
    "id": "culture",
@@ -44,7 +44,7 @@
    "exp": "2026-11-29",
    "evt": "",
    "order": "",
-   "text": "Bélier : tu vois clair dans un brief resté flou, range ton bureau numérique avant de commencer.\nTaureau : ta curiosité t’emmène sur une piste inattendue, sauvegarde tes fichiers deux fois.\nGémeaux : une conversation improvisée te débloque, dis non à ce qui peut attendre.\nCancer : ton idée un peu décalée fait mouche, garde un peu de souplesse dans ton planning.\nLion : ta créativité est au sommet en fin de journée, va voir une expo pour recharger les batteries.\nVierge : ton portfolio mérite un coup de neuf, fais confiance à ta première intuition.\nBalance : le calme revient après une semaine chargée, accorde-toi une vraie soirée off.\nScorpion : ton énergie entraîne toute l’équipe, mets de la musique pour trouver le flow.\nSagittaire : un retour de jury te met sur la bonne piste, pose la question qui te trotte en tête.\nCapricorne : un projet de groupe prend enfin forme, termine la semaine par un vrai moment de détente.\nVerseau : une deadline approche, mais tu as de l’avance, partage ton idée plutôt que de la garder pour toi.\nPoissons : une collaboration se révèle plus simple que prévu, relis ton travail le lendemain matin."
+   "text": "Bélier : tu vois clair dans un brief flou, range ton bureau numérique.\nTaureau : ta curiosité t’emmène loin, sauvegarde tes fichiers.\nGémeaux : une conversation improvisée te débloque, dis non à ce qui peut attendre.\nCancer : ton idée un peu décalée fait mouche, garde de la souplesse.\nLion : ta créativité brille en fin de journée, va voir une expo.\nVierge : ton portfolio mérite un coup de neuf, fais confiance à ton intuition.\nBalance : le calme revient après la tempête, accorde-toi une soirée off.\nScorpion : ton énergie entraîne toute l’équipe, mets de la musique.\nSagittaire : un retour de jury t’ouvre une piste, pose la question qui te trotte.\nCapricorne : un projet de groupe prend forme, finis la semaine en douceur.\nVerseau : une deadline approche, tu es prêt·e, partage ton idée.\nPoissons : une collaboration se passe à merveille, relis-toi le lendemain."
   }
  ],
  "tempsForts": []
