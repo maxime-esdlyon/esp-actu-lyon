@@ -1,7 +1,7 @@
 {
  "version": 1,
- "generatedAt": "2026-11-25T08:41:07.158Z",
- "generatedBy": "Marine Bouquet",
+ "generatedAt": "2026-11-25T09:07:46.090Z",
+ "generatedBy": "Test horoscope",
  "categories": [
   {
    "id": "culture",
@@ -26,11 +26,11 @@
  ],
  "items": [
   {
-   "id": "c-ex-comp1",
-   "title": "Semaine de compétition : rendez-vous du 9 au 15 février",
-   "chapo": "La semaine de compétition du campus approche : voici de quoi s’y préparer.",
-   "resume": "Annonce publiée la semaine d’avant : dates, programme et informations pratiques.",
-   "cat": "campus",
+   "id": "h-2026-11-23",
+   "title": "Horoscope de la semaine du 23 au 29 novembre",
+   "chapo": "Les astres ont lu ton planning : voici leurs conseils.",
+   "resume": "L’horoscope bienveillant du coworking, du lundi 23 novembre au dimanche 29 novembre.",
+   "cat": "horoscope",
    "prio": "Normale",
    "format": "",
    "qr": false,
@@ -40,30 +40,11 @@
    "fit": false,
    "image": "",
    "gallery": [],
-   "pub": "2026-11-17",
-   "exp": "2027-02-08",
-   "evt": "2027-02-09",
-   "order": ""
-  },
-  {
-   "id": "c-ex-comp2",
-   "title": "Semaine de compétition : c’est parti",
-   "chapo": "La compétition démarre : suis le programme de la semaine sur le campus.",
-   "resume": "Publication du premier jour de la compétition : programme du jour et rendez-vous à ne pas manquer.",
-   "cat": "campus",
-   "prio": "Normale",
-   "format": "",
-   "qr": false,
-   "link": "",
-   "qrLabel": "",
-   "filter": true,
-   "fit": false,
-   "image": "",
-   "gallery": [],
-   "pub": "2026-11-17",
-   "exp": "2027-02-15",
-   "evt": "2027-02-09",
-   "order": ""
+   "pub": "2026-11-23",
+   "exp": "2026-11-29",
+   "evt": "",
+   "order": "",
+   "text": "Bélier : tu vois clair dans un brief resté flou, range ton bureau numérique avant de commencer.\nTaureau : ta curiosité t’emmène sur une piste inattendue, sauvegarde tes fichiers deux fois.\nGémeaux : une conversation improvisée te débloque, dis non à ce qui peut attendre.\nCancer : ton idée un peu décalée fait mouche, garde un peu de souplesse dans ton planning.\nLion : ta créativité est au sommet en fin de journée, va voir une expo pour recharger les batteries.\nVierge : ton portfolio mérite un coup de neuf, fais confiance à ta première intuition.\nBalance : le calme revient après une semaine chargée, accorde-toi une vraie soirée off.\nScorpion : ton énergie entraîne toute l’équipe, mets de la musique pour trouver le flow.\nSagittaire : un retour de jury te met sur la bonne piste, pose la question qui te trotte en tête.\nCapricorne : un projet de groupe prend enfin forme, termine la semaine par un vrai moment de détente.\nVerseau : une deadline approche, mais tu as de l’avance, partage ton idée plutôt que de la garder pour toi.\nPoissons : une collaboration se révèle plus simple que prévu, relis ton travail le lendemain matin."
   }
  ],
  "tempsForts": []
