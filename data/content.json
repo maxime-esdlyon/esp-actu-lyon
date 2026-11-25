@@ -1,75 +1,70 @@
 {
-  "version": 1,
-  "generatedAt": "2026-11-24T09:00:00+01:00",
-  "generatedBy": "Exemple (remplacé à la première publication)",
-  "categories": [
-    { "id": "culture", "label": "Culture créative", "color": "#B494DC" },
-    { "id": "evenements", "label": "Événements", "color": "#D20014" },
-    { "id": "campus", "label": "Campus", "color": "#F0EB1E" },
-    { "id": "horoscope", "label": "Horoscope", "color": "#0E0E0E" }
-  ],
-  "items": [
-    {
-      "id": "c-ex1", "title": "Digital event : les projets montent sur scène",
-      "chapo": "Jeudi soir, l’espace coworking se transforme en scène : chaque équipe défend son idée devant un jury.",
-      "resume": "", "cat": "evenements", "prio": "Haute", "format": "seule",
-      "qr": true, "link": "https://www.esp.fr", "qrLabel": "Inscription",
-      "filter": true, "fit": false, "image": "", "gallery": [],
-      "pub": "2026-11-17", "exp": "2026-11-27", "evt": "2026-11-26", "order": "1"
-    },
-    {
-      "id": "g-ex1", "title": "Rendus B3 : la galerie des projets",
-      "chapo": "Identités visuelles, affiches et motion design : un aperçu des rendus de la promo B3 Design.",
-      "resume": "", "cat": "campus", "prio": "Normale", "format": "",
-      "qr": false, "link": "", "filter": false, "fit": true, "image": "",
-      "gallery": [
-        { "type": "image", "src": "../media/demo-projet-1.svg", "caption": "Projet 01 · B3 Design" },
-        { "type": "image", "src": "../media/demo-projet-2.svg", "caption": "Projet 02 · B3 Design" },
-        { "type": "image", "src": "../media/demo-projet-3.svg", "caption": "Projet 03 · B3 Design" },
-        { "type": "image", "src": "../media/demo-projet-4.svg", "caption": "Projet 04 · B3 Design" }
-      ],
-      "pub": "2026-11-20", "exp": "2026-12-20", "evt": "", "order": "2"
-    },
-    {
-      "id": "p-20261123-3", "title": "Fête des Lumières 2026 : 27 œuvres du 5 au 8 décembre",
-      "chapo": "Quatre soirées de créations lumineuses dans toute la ville, un terrain de jeu pour les yeux créatifs.",
-      "resume": "", "cat": "evenements", "prio": "Normale", "format": "",
-      "qr": true, "link": "https://www.lyon.fr/node/952681", "filter": true, "fit": false,
-      "image": "", "gallery": [], "pub": "2026-11-23", "exp": "2026-12-09", "evt": "2026-12-05", "order": ""
-    },
-    {
-      "id": "p-20261123-2", "title": "Biennale de Lyon : dernières semaines",
-      "chapo": "La 18e Biennale d’art contemporain se termine le 13 décembre : il reste peu de temps pour la visiter.",
-      "resume": "", "cat": "culture", "prio": "Normale", "format": "",
-      "qr": false, "link": "", "filter": true, "fit": false,
-      "image": "", "gallery": [], "pub": "2026-11-23", "exp": "2026-12-14", "evt": "", "order": ""
-    },
-    {
-      "id": "p-20261123-1", "title": "Sony Future Filmmaker Awards : dépôt jusqu’au 15 décembre",
-      "chapo": "Un concours de films ouvert aux étudiant·es, avec une catégorie dédiée aux cursus cinéma.",
-      "resume": "", "cat": "culture", "prio": "Normale", "format": "",
-      "qr": true, "link": "https://www.sony.fr", "filter": true, "fit": false,
-      "image": "", "gallery": [], "pub": "2026-11-23", "exp": "2026-12-16", "evt": "", "order": ""
-    },
-    {
-      "id": "c-ex-wifi", "title": "Nouveau réseau Wi-Fi au 2e étage",
-      "chapo": "Le réseau ESP-Coworking remplace l’ancien à partir de lundi. Identifiants à l’accueil.",
-      "resume": "", "cat": "campus", "prio": "Normale", "format": "",
-      "qr": false, "link": "", "filter": true, "fit": false,
-      "image": "", "gallery": [], "pub": "2026-11-20", "exp": "2026-12-04", "evt": "", "order": ""
-    },
-    {
-      "id": "p-20261123-4", "title": "Horoscope de la semaine du 23 au 29 novembre",
-      "chapo": "Une semaine pour avancer sans stress, avec une pincée d’humour.",
-      "resume": "", "cat": "horoscope", "prio": "Normale", "format": "",
-      "qr": false, "link": "", "filter": false, "fit": false, "image": "", "gallery": [],
-      "text": "Bélier : une idée fulgurante arrive en pleine pause café, note-la avant qu’elle ne s’échappe.\nTaureau : ton sens du détail fera des merveilles sur un rendu que tu pensais déjà fini.\nGémeaux : une conversation improvisée te débloque exactement là où tu coinçais.\nCancer : accorde-toi une vraie soirée tranquille, ta créativité te dira merci.\nLion : ton enthousiasme entraîne toute l’équipe, garde un œil sur le planning.\nVierge : range ton bureau numérique, tu retrouveras ce fichier perdu.\nBalance : le bon compromis existe, il se cache dans la deuxième version.\nScorpion : ose montrer ton brouillon, les retours seront précieux.\nSagittaire : une sortie culturelle t’inspire plus qu’une heure de veille.\nCapricorne : découpe la grosse tâche en trois petites, et coche-les.\nVerseau : ton idée décalée est la bonne, défends-la au prochain point.\nPoissons : écoute de la musique en travaillant, le flow viendra tout seul.",
-      "pub": "2026-11-23", "exp": "2026-11-29", "evt": "", "order": ""
-    }
-  ],
-  "tempsForts": [
-    { "id": "t-lyon-2", "title": "AI Week", "start": "2026-11-30", "end": "2026-12-04", "color": "Lavande" },
-    { "id": "t-lyon-3", "title": "Partiels (B2 COM)", "start": "2026-12-14", "end": "2026-12-18", "color": "Rouge" },
-    { "id": "t-lyon-x", "title": "Jury Social Media", "start": "2026-11-27", "end": "", "color": "Ocre" }
-  ]
+ "version": 1,
+ "generatedAt": "2026-11-25T08:41:07.158Z",
+ "generatedBy": "Marine Bouquet",
+ "categories": [
+  {
+   "id": "culture",
+   "label": "Culture créative",
+   "color": "#B494DC"
+  },
+  {
+   "id": "evenements",
+   "label": "Événements",
+   "color": "#D20014"
+  },
+  {
+   "id": "campus",
+   "label": "Campus",
+   "color": "#F0EB1E"
+  },
+  {
+   "id": "horoscope",
+   "label": "Horoscope",
+   "color": "#0E0E0E"
+  }
+ ],
+ "items": [
+  {
+   "id": "c-ex-comp1",
+   "title": "Semaine de compétition : rendez-vous du 9 au 15 février",
+   "chapo": "La semaine de compétition du campus approche : voici de quoi s’y préparer.",
+   "resume": "Annonce publiée la semaine d’avant : dates, programme et informations pratiques.",
+   "cat": "campus",
+   "prio": "Normale",
+   "format": "",
+   "qr": false,
+   "link": "",
+   "qrLabel": "",
+   "filter": true,
+   "fit": false,
+   "image": "",
+   "gallery": [],
+   "pub": "2026-11-17",
+   "exp": "2027-02-08",
+   "evt": "2027-02-09",
+   "order": ""
+  },
+  {
+   "id": "c-ex-comp2",
+   "title": "Semaine de compétition : c’est parti",
+   "chapo": "La compétition démarre : suis le programme de la semaine sur le campus.",
+   "resume": "Publication du premier jour de la compétition : programme du jour et rendez-vous à ne pas manquer.",
+   "cat": "campus",
+   "prio": "Normale",
+   "format": "",
+   "qr": false,
+   "link": "",
+   "qrLabel": "",
+   "filter": true,
+   "fit": false,
+   "image": "",
+   "gallery": [],
+   "pub": "2026-11-17",
+   "exp": "2027-02-15",
+   "evt": "2027-02-09",
+   "order": ""
+  }
+ ],
+ "tempsForts": []
 }
