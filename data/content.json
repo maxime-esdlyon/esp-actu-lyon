@@ -1,6 +1,6 @@
 {
  "version": 1,
- "generatedAt": "2026-11-25T09:52:25.817Z",
+ "generatedAt": "2026-11-25T10:02:42.038Z",
  "generatedBy": "Publication automatique",
  "categories": [
   {
@@ -25,26 +25,6 @@
   }
  ],
  "items": [
-  {
-   "id": "p-20261123-1",
-   "title": "Sony Future Filmmaker Awards 2027 : dépôt jusqu’au 15 décembre",
-   "chapo": "Un concours de films ouvert aux étudiant·es, avec une catégorie dédiée aux cursus cinéma.",
-   "resume": "La 5e édition des Sony Future Filmmaker Awards accepte les films jusqu’au 15 décembre 2026. L’inscription est gratuite.",
-   "cat": "culture",
-   "prio": "Normale",
-   "format": "",
-   "qr": false,
-   "link": "https://www.sony.fr/presscentre/lancement-du-concours-sony-future-filmmaker-awards-2027",
-   "qrLabel": "",
-   "filter": true,
-   "fit": false,
-   "image": "",
-   "gallery": [],
-   "pub": "2026-11-23",
-   "exp": "2026-12-16",
-   "evt": "",
-   "order": ""
-  },
   {
    "id": "h-2026-11-23",
    "title": "Horoscope de la semaine du 23 au 29 novembre",
