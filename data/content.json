@@ -1,6 +1,6 @@
 {
  "version": 1,
- "generatedAt": "2026-11-25T09:32:22.076Z",
+ "generatedAt": "2026-11-25T09:52:25.817Z",
  "generatedBy": "Publication automatique",
  "categories": [
   {
@@ -48,8 +48,8 @@
   {
    "id": "h-2026-11-23",
    "title": "Horoscope de la semaine du 23 au 29 novembre",
-   "chapo": "Les astres ont lu ton planning : voici leurs conseils.",
-   "resume": "L’horoscope bienveillant du coworking, du lundi 23 novembre au dimanche 29 novembre.",
+   "chapo": "Mercure est rétrograde, ton export aussi.",
+   "resume": "L’horoscope des stagiaires et alternant·es, du lundi 23 novembre au dimanche 29 novembre.",
    "cat": "horoscope",
    "prio": "Normale",
    "format": "",
@@ -64,7 +64,7 @@
    "exp": "2026-11-29",
    "evt": "",
    "order": "",
-   "text": "Bélier : tu vois clair dans un brief flou, range ton bureau numérique.\nTaureau : ta curiosité t’emmène loin, sauvegarde tes fichiers.\nGémeaux : une conversation improvisée te débloque, dis non à ce qui peut attendre.\nCancer : ton idée un peu décalée fait mouche, garde de la souplesse.\nLion : ta créativité brille en fin de journée, va voir une expo.\nVierge : ton portfolio mérite un coup de neuf, fais confiance à ton intuition.\nBalance : le calme revient après la tempête, accorde-toi une soirée off.\nScorpion : ton énergie entraîne toute l’équipe, mets de la musique.\nSagittaire : un retour de jury t’ouvre une piste, pose la question qui te trotte.\nCapricorne : un projet de groupe prend forme, finis la semaine en douceur.\nVerseau : une deadline approche, tu es prêt·e, partage ton idée.\nPoissons : une collaboration se passe à merveille, relis-toi le lendemain."
+   "text": "Bélier : L’école et l’entreprise veulent un rendu. Offre-toi un vrai déjeuner.\nTaureau : Ton tournage déborde de deux heures. Filme des plans de coupe en plus.\nGémeaux : Ta story fait 12 vues, dont ta mère. Débranche à 19 h.\nCancer : Ton fichier Figma a 47 versions. Sauvegarde avant d’exporter.\nLion : Ton manager vient de découvrir Canva. Pense utilisateur, pas ego.\nVierge : Ta to-do list a sa propre to-do list. Bois de l’eau, pas que du café.\nBalance : Ton testeur clique partout sauf là. Fais un moodboard pour respirer.\nScorpion : Un brief tombe le vendredi à 18 h. Cite un KPI, ça rassure.\nSagittaire : L’algo LinkedIn te sourit enfin. Mets-le dans ton portfolio.\nCapricorne : Ta reco stratégique fait l’unanimité. Reformule, ça passe mieux.\nVerseau : Ta prez a 30 slides de trop. Coupe ton micro avant de soupirer.\nPoissons : On te demande « un truc qui buzze ». Bloque une heure sans notifs."
   }
  ],
  "tempsForts": []
